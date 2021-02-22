@@ -10,7 +10,7 @@ COC骰子娘插件 For Nonebot2
 
 <p align="center">
   <a href="https://raw.githubusercontent.com/abrahum/nonebot-plugin-cocdicer/master/LICENSE">
-    <img src="https://img.shields.io/github/license/abrahum/nonebot-plugin-cocdicer.svg" alt="license">
+    <img src="https://img.shields.io/github/license/abrahum/nonebot_plugin_cocdicer.svg" alt="license">
   </a>
   <a href="https://pypi.python.org/pypi/nonebot-plugin-cocdicer">
     <img src="https://img.shields.io/pypi/v/nonebot-plugin-cocdicer.svg" alt="pypi">
