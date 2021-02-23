@@ -42,6 +42,20 @@ def st():
     return "D20=%d：命中了%s" % (result, rstr)
 
 
+def en(arg: str) -> str:
+    try:
+        arg = int(arg)
+    except:
+        return en_help_message
+    check = random.randint(1, 100)
+    if check > arg or check > 95:
+        plus = random.randint(1, 10)
+        r = "判定值%d，判定成功，技能成长%d+%d=%d" % (check, arg, plus, arg+plus)
+        return r + "\n温馨提示：如果技能提高到90%或更高，增加2D6理智点数。"
+    else:
+        return "判定值%d，判定失败，技能无成长。" % check
+
+
 class Dices(object):
     def __init__(self):
         self.dices = 1
@@ -142,12 +156,14 @@ class Dices(object):
             self._ex_result = ""
         elif type(self.ex_dice) == int:
             ex_result = self.ex_dice_type*self.ex_dice
-            self._ex_result = "%s%s%d" % (str(self.result) if self.dices == 1 else "", "+" if self.ex_dice_type == 1 else "-", self.ex_dice)
+            self._ex_result = "%s%s%d" % (str(
+                self.result) if self.dices == 1 else "", "+" if self.ex_dice_type == 1 else "-", self.ex_dice)
             self.result += ex_result
         elif type(self.ex_dice) == Dices:
             self.ex_dice.roll
             ex_result = self.ex_dice_type*self.ex_dice.result
-            self._ex_result = "%s%s%d" % (str(self.result) if self.dices == 1 else "", "+" if self.ex_dice_type == 1 else "-", self.ex_dice)
+            self._ex_result = "%s%s%d" % (str(
+                self.result) if self.dices == 1 else "", "+" if self.ex_dice_type == 1 else "-", self.ex_dice)
             self.result += ex_result
         return self._ex_result
 
@@ -165,8 +181,10 @@ class Dices(object):
                     ("+" if self.ex_dice_type == 1 else "-") + str(self.ex_dice) if type(self.ex_dice) == int else (str(self.ex_dice.dices)+"D"+self.ex_dice.faces))
             )
             self._mid = "%s%s=" % (xdyr, self._ex_result)
-            self._end = "%d%s%s" % (self.result, self._bp_result, self._a_check_result)
-            r += "%s%s%s" % (self._head, self._mid if self.dices != 1 or self.ex_dice else "", self._end)
+            self._end = "%d%s%s" % (
+                self.result, self._bp_result, self._a_check_result)
+            r += "%s%s%s" % (self._head, self._mid if self.dices !=
+                             1 or self.ex_dice else "", self._end)
             self.times -= 1
             if self.times:
                 r += "\n"
@@ -192,7 +210,6 @@ def rd(arg: str):
         args = re.split("(\\d+)", arg.lower())
         prework(args)
         args = Mylist(args)
-        print(args)
         for i in range(len(args)):
             if args[i] == "a":
                 dices.a = True
@@ -225,7 +242,7 @@ def rd(arg: str):
             return [dices.roll()]
         return dices.roll()
     except:
-        return("输入有误")
+        return r_help_message
 
 
 if __name__ == "__main__":

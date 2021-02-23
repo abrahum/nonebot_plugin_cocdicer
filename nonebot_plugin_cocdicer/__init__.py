@@ -1,15 +1,18 @@
-from .data_source import rd, help_message, st
+from .data_source import rd, help_message, st, en
 from .madness import ti, li
 from .create import Investigator
+from .san_check import sc
 
 from nonebot import on_command
 from nonebot.adapters.cqhttp import Bot, Event
 
 rdhelp = on_command(".help", priority=2)
 stcommand = on_command(".st", priority=2)
+encommand = on_command(".en", priority=2)
 ticommand = on_command(".ti", priority=2)
 licommand = on_command(".li", priority=2)
 coc = on_command(".coc", priority=2)
+sccommand = on_command(".sc", priority=2)
 rdcommand = on_command(".", priority=3)
 
 
@@ -23,11 +26,16 @@ async def stcommandhandler(bot: Bot):
     await rdhelp.finish(st())
 
 
+@encommand.handle()
+async def enhandler(bot: Bot, event: Event):
+    args = str(event.get_message()).strip()
+    await encommand.finish(en(args))
+
+
 @rdcommand.handle()
 async def rdcommandhandler(bot: Bot, event: Event):
     args = str(event.get_message()).strip()
     uid = event.get_session_id()
-    print(uid)
     if args and not("." in args):
         rrd = rd(args)
         if type(rrd) == str:
@@ -56,3 +64,9 @@ async def ticommandhandler(bot: Bot):
 @licommand.handle()
 async def licommandhandler(bot: Bot):
     await licommand.finish(li())
+
+
+@sccommand.handle()
+async def schandler(bot: Bot, event: Event):
+    args = str(event.get_message()).strip()
+    await sccommand.finish(sc(args.lower()))
