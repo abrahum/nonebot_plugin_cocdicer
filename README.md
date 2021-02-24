@@ -30,6 +30,8 @@ nonebot.load_plugin("nonebot_plugin_cocdicer")
 ```
 启动机器人后，输入 `.help` 获取帮助信息。
 
+温馨提示：**需要配置 `COMMAND_START = [""]` 使用**，否则请在指令之前额外增加指令开始符号。
+
 ## 骰娘技能
 
 - Done or Will be done soon
