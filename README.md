@@ -15,7 +15,7 @@ COC骰子娘插件 For Nonebot2
   <a href="https://pypi.python.org/pypi/nonebot-plugin-cocdicer">
     <img src="https://img.shields.io/pypi/v/nonebot-plugin-cocdicer.svg" alt="pypi">
   </a>
-  <img src="https://img.shields.io/badge/python-3.8+-blue.svg" alt="python">
+  <img src="https://img.shields.io/badge/python-3.7+-blue.svg" alt="python">
 </p>
 
 ## 使用方法
