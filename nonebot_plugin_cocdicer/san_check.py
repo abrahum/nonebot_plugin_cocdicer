@@ -7,9 +7,11 @@ import re
 def number_or_dice(arg: str):
     if "d" in arg:
         d = Dices()
-        if dices := re.search(r"\d+d", arg):
+        dices = re.search(r"\d+d", arg)
+        if dices:
             d.dices = int(dices.group()[:-1])
-        if faces := re.search(r"d\d+", arg):
+        faces = re.search(r"d\d+", arg)
+        if faces:
             d.faces = int(faces.group()[1:])
         d.roll()
         return d
