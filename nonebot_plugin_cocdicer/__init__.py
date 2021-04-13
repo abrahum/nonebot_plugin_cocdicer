@@ -13,7 +13,7 @@ ticommand = on_startswith(".ti", priority=2)
 licommand = on_startswith(".li", priority=2)
 coc = on_startswith(".coc", priority=2)
 sccommand = on_startswith(".sc", priority=2)
-rdcommand = on_startswith(".r", priority=3)
+rdcommand = on_startswith(".rd", priority=3)
 
 
 @rdhelp.handle()
