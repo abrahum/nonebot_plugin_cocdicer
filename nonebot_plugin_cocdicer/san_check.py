@@ -1,5 +1,5 @@
 from .dices import Dices
-from .messages import sc_help_message
+from .messages import help_messages
 from .cards import cards
 
 from nonebot.adapters.cqhttp import Event
@@ -35,13 +35,13 @@ def sc(arg: str, event: Event) -> str:
         elif re.search(r"\d+", arg):
             a_num = re.search(r"\d+", arg)
     if not (success and failure):
-        return sc_help_message
+        return help_messages.sc
     if (not a_num) and cards.get(event):
         card_data = cards.get(event)
         a_num = card_data["san"]
         using_card = True
     else:
-        return sc_help_message
+        return help_messages.sc
     check_dice = Dices()
     check_dice.a = True
     check_dice.anum = a_num if using_card else int(a_num.group())

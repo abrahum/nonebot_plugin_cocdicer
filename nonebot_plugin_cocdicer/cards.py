@@ -2,7 +2,7 @@ from .investigator import Investigator
 from .dices import Dices
 from nonebot.adapters.cqhttp import Event
 from nonebot.adapters.cqhttp.event import GroupMessageEvent
-from .messages import sa_help_message
+from .messages import help_messages
 
 import ujson as json
 
@@ -122,7 +122,7 @@ def show_handler(event: Event, args: str):
 
 def sa_handler(event: Event, args: str):
     if not args:
-        return sa_help_message
+        return help_messages.sa
     elif not cards.get(event):
         return "请先使用set指令保存人物卡后再使用快速检定功能。"
     for attr, alias in attrs_dict.items():

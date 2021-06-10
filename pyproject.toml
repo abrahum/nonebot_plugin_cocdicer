@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "nonebot_plugin_cocdicer"
-version = "0.2.0"
+version = "0.2.1"
 description = "A COC dice plugin for Nonebot2"
 authors = ["abrahumlink <307887491@qq.com>"]
 documentation = "https://github.com/abrahum/nonebot_plugin_cocdicer#readme"

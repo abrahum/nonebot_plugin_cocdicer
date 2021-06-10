@@ -1,35 +1,48 @@
-main_help_message: str = "本骰娘由nonebot2强力驱动\n" \
-                         ".r    投掷指令 todo\n" \
-                         "    d   制定骰子面数\n" \
-                         "    a   检定\n" \
-                         "    h   暗骰\n" \
-                         "    #   多轮检定\n" \
-                         "    bp  奖励骰&惩罚骰\n" \
-                         "    +/- 附加计算  todo\n" \
-                         ".sc   疯狂检定\n" \
-                         ".st   射击命中判定\n" \
-                         ".ti   临时疯狂症状\n" \
-                         ".li   总结疯狂症状\n" \
-                         ".coc  coc角色作成\n" \
-                         ".help 帮助信息\n" \
-                         ".en   技能成长\n" \
-                         ".set  角色卡设定\n" \
-                         ".show 角色卡查询"
-r_help_message: str = ".r[dah#bp] a_number [+/-]ex_number\n" \
-                      "d：骰子设定指令,标准格式为xdy，x为骰子数量y为骰子面数；\n" \
-                      "a：检定指令，根据后续a_number设定数值检定；\n" \
-                      "h：暗骰指令，骰子结构将会私聊发送给该指令者；\n" \
-                      "#：多轮投掷指令，#后接数字即可设定多轮投掷；\n" \
-                      "bp：奖励骰与惩罚骰；\n" \
-                      "+/-：附加计算指令，目前仅支持数字"
-sc_help_message: str = ".sc success/failure san_number\n" \
-                       "success：判定成功降低san值，支持x或xdy语法（x与y为数字）；\n" \
-                       "failure：判定失败降低san值，支持语法如上；\n" \
-                       "san_number：当前san值，缺省an_number将会自动使用保存的人物卡数据。"
-set_help_message: str = ".set [attr_name] [attr_num]\nattr_name：属性名称，例 name、名字、str、力量\nattr_num：属性值\n可以单独输入.set指令，骰娘将自动读取最近一次coc指令结果进行保存"
-show_help_message: str = ".show [@xxx]\n查看指定调查员保存的人物卡，缺省at则查询自身人物卡"
-sa_help_message: str = ".sa [attr_name]\nattr_name：属性名称，例:name、名字、str、力量"
-en_help_message: str = ".en skill_level\nskill_level：需要成长的技能当前等级。"
+class Help_messages():
+    def __init__(self):
+        self.main = "本骰娘由nonebot2强力驱动\n" \
+            ".r    投掷指令 todo\n" \
+            "    d   制定骰子面数\n" \
+            "    a   检定\n" \
+            "    h   暗骰\n" \
+            "    #   多轮检定\n" \
+            "    bp  奖励骰&惩罚骰\n" \
+            "    +/- 附加计算  todo\n" \
+            ".sc   疯狂检定\n" \
+            ".st   射击命中判定\n" \
+            ".ti   临时疯狂症状\n" \
+            ".li   总结疯狂症状\n" \
+            ".coc  coc角色作成\n" \
+            ".help 帮助信息\n" \
+            ".en   技能成长\n" \
+            ".set  角色卡设定\n" \
+            ".show 角色卡查询\n" \
+            ".sa   快速检定"
+        self.r = ".r[dah#bp] a_number [+/-]ex_number\n" \
+            "d：骰子设定指令,标准格式为xdy，x为骰子数量y为骰子面数；\n" \
+            "a：检定指令，根据后续a_number设定数值检定；\n" \
+            "h：暗骰指令，骰子结构将会私聊发送给该指令者；\n" \
+            "#：多轮投掷指令，#后接数字即可设定多轮投掷；\n" \
+            "bp：奖励骰与惩罚骰；\n" \
+            "+/-：附加计算指令，目前仅支持数字"
+        self.sc = ".sc success/failure san_number\n" \
+            "success：判定成功降低san值，支持x或xdy语法（x与y为数字）；\n" \
+            "failure：判定失败降低san值，支持语法如上；\n" \
+            "san_number：当前san值，缺省an_number将会自动使用保存的人物卡数据。"
+        self.set = ".set [attr_name] [attr_num]\n" \
+            "attr_name：属性名称，例 name、名字、str、力量\n" \
+            "attr_num：属性值\n" \
+            "可以单独输入.set指令，骰娘将自动读取最近一次coc指令结果进行保存"
+        self.show = ".show [@xxx]\n" \
+            "查看指定调查员保存的人物卡，缺省at则查询自身人物卡"
+        self.sa = ".sa [attr_name]\n" \
+            "attr_name：属性名称，例:name、名字、str、力量"
+        self.en = ".en skill_level\n" \
+            "skill_level：需要成长的技能当前等级。"
+
+
+help_messages = Help_messages()
+
 temporary_madness = [
     "1) 失忆: 调查员会发现自己身处于一个安全的地点却没有任何来到这里的记忆。例如，调查员前一刻还在家中吃着早饭，下一刻就已经直面着不知名的怪物。这将会持续1D10轮。",
     "2) 假性残疾:调查员陷入了心理性的失明，失聪以及躯体缺失感中，持续1D10轮。",

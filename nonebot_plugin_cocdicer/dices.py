@@ -1,7 +1,7 @@
 # 参考[OlivaDiceDocs](https://oliva.dicer.wiki/userdoc)实现的nonebot2骰娘插件
 import re
 import random
-from .messages import *
+from .messages import help_messages
 
 
 class Mylist(list):
@@ -12,8 +12,11 @@ class Mylist(list):
             return ""
 
 
-def help_message():
-    return main_help_message
+def help_message(args: str):
+    if args in help_messages.__dict__.keys():
+        return help_messages.__dict__[args]
+    else:
+        return help_messages.main
 
 
 def dhr(t, o):

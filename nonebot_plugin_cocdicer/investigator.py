@@ -28,6 +28,7 @@ class Investigator(object):
         self.edu = randattr(2, 6)
         self.luc = randattr()
         self.san = self.pow
+        self.skills = {}
 
     def body_build(self) -> int:
         build = self.str + self.con

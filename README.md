@@ -48,7 +48,11 @@ nonebot.load_plugin("nonebot_plugin_cocdicer")
 
 - To Do
 
-    - [ ] .rule 规则速查
+    - [ ] .kp   KP模式
+    - [ ] .pc   多角色卡管理、转让
+    - [ ] .del  删除信息
+    - [ ] .rule 规则速查（优先级较低）
+    - [ ] set技能值设定、sa组合检定
 
 ## 指令详解
 
@@ -124,9 +128,10 @@ nonebot.load_plugin("nonebot_plugin_cocdicer")
 
 ## Change Log
 
-### 0.2.0
+### 0.2.1
 
 - 增加 set 、 show 、 sa 指令
+- 帮助信息重构
 
 ## 特别鸣谢
 

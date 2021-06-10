@@ -44,8 +44,9 @@ sacommand = on_startswith(".sa", priority=5, block=True)
 
 
 @rdhelp.handle()
-async def rdhelphandler(bot: Bot):
-    await rdhelp.finish(help_message())
+async def rdhelphandler(bot: Bot, event: Event):
+    args = str(event.get_message())[5:].strip()
+    await rdhelp.finish(help_message(args))
 
 
 @stcommand.handle()
