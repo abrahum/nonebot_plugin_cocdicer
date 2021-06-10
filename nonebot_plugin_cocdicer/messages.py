@@ -12,7 +12,9 @@ main_help_message: str = "本骰娘由nonebot2强力驱动\n" \
                          ".li   总结疯狂症状\n" \
                          ".coc  coc角色作成\n" \
                          ".help 帮助信息\n" \
-                         ".en   技能成长"
+                         ".en   技能成长\n" \
+                         ".set  角色卡设定\n" \
+                         ".show 角色卡查询"
 r_help_message: str = ".r[dah#bp] a_number [+/-]ex_number\n" \
                       "d：骰子设定指令,标准格式为xdy，x为骰子数量y为骰子面数；\n" \
                       "a：检定指令，根据后续a_number设定数值检定；\n" \
@@ -21,9 +23,12 @@ r_help_message: str = ".r[dah#bp] a_number [+/-]ex_number\n" \
                       "bp：奖励骰与惩罚骰；\n" \
                       "+/-：附加计算指令，目前仅支持数字"
 sc_help_message: str = ".sc success/failure san_number\n" \
-                       "success：判定成功降低 san 值，支持 x 或 xdy 语法（ x 与 y 为数字）；\n" \
-                       "failure：判定失败降低 san 值，支持语法如上；\n" \
-                       "san_number：当前 san 值。"
+                       "success：判定成功降低san值，支持x或xdy语法（x与y为数字）；\n" \
+                       "failure：判定失败降低san值，支持语法如上；\n" \
+                       "san_number：当前san值，缺省an_number将会自动使用保存的人物卡数据。"
+set_help_message: str = ".set [attr_name] [attr_num]\nattr_name：属性名称，例 name、名字、str、力量\nattr_num：属性值\n可以单独输入.set指令，骰娘将自动读取最近一次coc指令结果进行保存"
+show_help_message: str = ".show [@xxx]\n查看指定调查员保存的人物卡，缺省at则查询自身人物卡"
+sa_help_message: str = ".sa [attr_name]\nattr_name：属性名称，例:name、名字、str、力量"
 en_help_message: str = ".en skill_level\nskill_level：需要成长的技能当前等级。"
 temporary_madness = [
     "1) 失忆: 调查员会发现自己身处于一个安全的地点却没有任何来到这里的记忆。例如，调查员前一刻还在家中吃着早饭，下一刻就已经直面着不知名的怪物。这将会持续1D10轮。",

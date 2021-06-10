@@ -42,10 +42,12 @@ nonebot.load_plugin("nonebot_plugin_cocdicer")
     - [x] .coc  coc角色作成
     - [x] .help 帮助信息
     - [x] .en   技能成长
+    - [x] .set  角色卡设定
+    - [x] .show 角色卡查询
+    - [x] .sa   快速检定指令
 
 - To Do
 
-    - [ ] .set  设定
     - [ ] .rule 规则速查
 
 ## 指令详解
@@ -69,11 +71,11 @@ nonebot.load_plugin("nonebot_plugin_cocdicer")
 以上指令理论上均可随意变更顺序并嵌套使用，如果不能，就是出bug了_(:3」∠)_
 
 ```
-.sc success/failure san_number
+.sc success/failure [san_number]
 ```
 - success：判定成功降低 san 值，支持 x 或 xdy 语法（ x 与 y 为数字）；
 - failure：判定失败降低 san 值，支持语法如上；
-- san_number：当前 san 值。
+- san_number：当前 san 值，缺省 san_number 将会自动使用保存的人物卡数据。
 
 ```
 .en skill_level
@@ -82,15 +84,52 @@ nonebot.load_plugin("nonebot_plugin_cocdicer")
 - skill_level：需要成长的技能当前等级。
 
 ```
-.coc age
+.coc [age]
 ```
-- age：调查员年龄
+- age：调查员年龄，缺省 age 默认年龄 20
 
 > 交互式调查员创建功能计划中
+
+```
+.set [attr_name] [attr_num]
+```
+- attr_name：属性名称，例:name、名字、str、力量
+- attr_num：属性值
+- **可以单独输入 .set 指令，骰娘将自动读取最近一次 coc 指令结果进行保存**
+
+| 属性名称 | 缩写  |
+| :------: | :---: |
+|   名称   | name  |
+|   年龄   |  age  |
+|   力量   |  str  |
+|   体质   |  con  |
+|   体型   |  siz  |
+|   敏捷   |  dex  |
+|   外貌   |  app  |
+|   智力   |  int  |
+|   意志   |  pow  |
+|   教育   |  edu  |
+|   幸运   |  luc  |
+|   理智   |  san  |
+
+```
+.show [@xxx]
+```
+- 查看指定调查员保存的人物卡，缺省 at 则查询自身人物卡
+
+```
+.sa [attr_name]
+```
+- attr_name：属性名称，例:name、名字、str、力量
+
+## Change Log
+
+### 0.2.0
+
+- 增加 set 、 show 、 sa 指令
 
 ## 特别鸣谢
 
 [nonebot/nonebot2](https://github.com/nonebot/nonebot2/)：简单好用，扩展性极强的 Bot 框架
 
 [Mrs4s/go-cqhttp](https://github.com/Mrs4s/go-cqhttp)：更新迭代快如疯狗的 [OneBot](https://github.com/howmanybots/onebot/blob/master/README.md) Golang 原生实现
-

@@ -16,6 +16,7 @@ def randattr(time: int = 3, ex: int = 0):
 
 class Investigator(object):
     def __init__(self) -> None:
+        self.name = "佚名调查员"
         self.age = 20
         self.str = randattr()
         self.con = randattr()
@@ -26,6 +27,7 @@ class Investigator(object):
         self.pow = randattr()
         self.edu = randattr(2, 6)
         self.luc = randattr()
+        self.san = self.pow
 
     def body_build(self) -> int:
         build = self.str + self.con
@@ -98,6 +100,8 @@ class Investigator(object):
         return
 
     def age_change(self, age: int = 20) -> str:
+        if self.age != 20:
+            return  # 防止多次年龄增强判定
         if age < 15:
             return "年龄过小，无法担当调查员"
         elif age >= 90:
@@ -140,8 +144,12 @@ class Investigator(object):
             return "外貌-25，力量、体型、敏捷合计降低80，教育增强判定四次"
 
     def __repr__(self) -> str:
-        return "调查员 年龄:%d\n力量:%d 体质:%d 体型:%d\n敏捷:%d 外貌:%d 智力:%d\n意志:%d 教育:%d 幸运:%d\nDB:%s 生命值:%d 移动速度:%d" % (
-            self.age, self.str, self.con, self.siz, self.dex, self.app, self.int, self.pow, self.edu, self.luc, self.db(), self.lp_max(), self.mov())
-    
+        return "%s 年龄:%d\n力量:%d 体质:%d 体型:%d\n敏捷:%d 外貌:%d 智力:%d\n意志:%d 教育:%d 幸运:%d\nDB:%s 生命值:%d 移动速度:%d SAN:%d" % (
+            self.name, self.age, self.str, self.con, self.siz, self.dex, self.app, self.int, self.pow, self.edu, self.luc, self.db(), self.lp_max(), self.mov(), self.san)
+
     def output(self) -> str:
         return self.__repr__()
+
+    def load(self, data: dict):
+        self.__dict__.update(data)
+        return self

@@ -1,5 +1,8 @@
-from .data_source import Dices
+from .dices import Dices
 from .messages import sc_help_message
+from .cards import cards
+
+from nonebot.adapters.cqhttp import Event
 
 import re
 
@@ -19,22 +22,46 @@ def number_or_dice(arg: str):
         return int(arg)
 
 
-def sc(arg: str) -> str:
-    a_num = re.search(r" \d+", arg)
-    success = re.search(r"\d*d\d+|\d+", arg)
-    failure = re.search(r"[\/]+(\d*d\d+|\d+)", arg)
-    if not (a_num and success and failure):
+def sc(arg: str, event: Event) -> str:
+    args = arg.split(" ")
+    a_num = success = failure = None
+    using_card = False
+    for arg in args:
+        if not arg:
+            continue
+        elif re.search(r"\/", arg):
+            success = re.search(r"\d*d\d+|\d+", arg)
+            failure = re.search(r"[\/]+(\d*d\d+|\d+)", arg)
+        elif re.search(r"\d+", arg):
+            a_num = re.search(r"\d+", arg)
+    if not (success and failure):
+        return sc_help_message
+    if (not a_num) and cards.get(event):
+        card_data = cards.get(event)
+        a_num = card_data["san"]
+        using_card = True
+    else:
         return sc_help_message
     check_dice = Dices()
     check_dice.a = True
-    check_dice.anum = int(a_num.group()[1:])
+    check_dice.anum = a_num if using_card else int(a_num.group())
     success = number_or_dice(success.group())
     failure = number_or_dice(failure.group()[1:])
     r = "San Check" + check_dice.roll()[4:]
     result = success if check_dice.result <= check_dice.anum else failure
     r += "\n理智降低了"
-    if type(result) == int:
+    if type(result) is int:
         r += "%d点" % result
     else:
         r = r + result._head + str(result.result)
+        result = result.result
+    if result >= card_data["san"]:
+        r += "\n%s陷入了永久性疯狂" % card_data["name"]
+    elif result >= (card_data["san"] // 5):
+        r += "\n%s陷入了不定性疯狂" % card_data["name"]
+    elif result >= 5:
+        r += "\n%s陷入了临时性疯狂" % card_data["name"]
+    if using_card:
+        card_data["san"] -= result
+        cards.update_cards(event, card_data)
     return r
