@@ -48,7 +48,7 @@ def st():
 def en(arg: str) -> str:
     try:
         arg = int(arg)
-    except:
+    except ValueError:
         return en_help_message
     check = random.randint(1, 100)
     if check > arg or check > 95:

@@ -148,6 +148,14 @@ class Investigator(object):
         return "%s 年龄:%d\n力量:%d 体质:%d 体型:%d\n敏捷:%d 外貌:%d 智力:%d\n意志:%d 教育:%d 幸运:%d\nDB:%s 生命值:%d 移动速度:%d SAN:%d" % (
             self.name, self.age, self.str, self.con, self.siz, self.dex, self.app, self.int, self.pow, self.edu, self.luc, self.db(), self.lp_max(), self.mov(), self.san)
 
+    def skills_output(self) -> str:
+        if not self.skills:
+            return "%s当前无任何技能数据。" % self.name
+        r = "%s技能数据:" % self.name
+        for k, v in self.skills.items():
+            r += "\n%s:%d" % (k, v)
+        return r
+
     def output(self) -> str:
         return self.__repr__()
 

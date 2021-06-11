@@ -30,6 +30,8 @@ nonebot.load_plugin("nonebot_plugin_cocdicer")
 ```
 启动机器人后，输入 `.help` 获取帮助信息。
 
+遇到任何问题，欢迎开 Issue ~
+
 ## 骰娘技能
 
 - Done or Will be done soon
@@ -45,14 +47,15 @@ nonebot.load_plugin("nonebot_plugin_cocdicer")
     - [x] .set  角色卡设定
     - [x] .show 角色卡查询
     - [x] .sa   快速检定指令
+    - [x] .del  删除信息
 
 - To Do
 
     - [ ] .kp   KP模式
     - [ ] .pc   多角色卡管理、转让
-    - [ ] .del  删除信息
     - [ ] .rule 规则速查（优先级较低）
-    - [ ] set技能值设定、sa组合检定
+    - [ ] set 技能值设定、sa 组合检定
+    - [ ] en 使用保存的技能数值
 
 ## 指令详解
 
@@ -117,16 +120,31 @@ nonebot.load_plugin("nonebot_plugin_cocdicer")
 |   理智   |  san  |
 
 ```
-.show [@xxx]
+.show[s] [@xxx]
 ```
-- 查看指定调查员保存的人物卡，缺省 at 则查询自身人物卡
+- .shows 查看技能指令
+- 查看指定调查员保存的人物卡，缺省 at 则查看自身人物卡
 
 ```
 .sa [attr_name]
 ```
 - attr_name：属性名称，例:name、名字、str、力量
 
+```
+.del [c|card|xxx]
+```
+
+- c：清空暂存的人物卡
+- card：删除使用中的人物卡(慎用)
+- xxx：其他任意技能名
+- 以上指令支持多个混合使用，多个参数使用空格隔开
+
 ## Change Log
+
+### 0.2.2
+
+- 增加技能系统
+- 增加 del 指令(总感觉 del 还有大 bug ···)
 
 ### 0.2.1
 
