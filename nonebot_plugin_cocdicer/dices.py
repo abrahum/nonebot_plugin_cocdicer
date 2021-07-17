@@ -49,7 +49,7 @@ def en(arg: str) -> str:
     try:
         arg = int(arg)
     except ValueError:
-        return en_help_message
+        return help_messages.en
     check = random.randint(1, 100)
     if check > arg or check > 95:
         plus = random.randint(1, 10)
@@ -245,7 +245,7 @@ def rd(arg: str):
             return [dices.roll()]
         return dices.roll()
     except:
-        return r_help_message
+        return help_messages.r
 
 
 if __name__ == "__main__":

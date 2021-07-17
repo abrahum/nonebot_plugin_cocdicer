@@ -141,7 +141,7 @@ nonebot.load_plugin("nonebot_plugin_cocdicer")
 
 ## Change Log
 
-### 0.2.3
+### 0.2.4
 
 - 临时紧急修复 sc 指令逻辑问题（竟然还有人用这个插件）
 - 不保证修完没 bug

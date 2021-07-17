@@ -34,19 +34,15 @@ def sc(arg: str, event: Event) -> str:
             failure = re.search(r"[\/]+(\d*d\d+|\d+)", arg)
         elif re.search(r"\d+", arg):
             a_num = re.search(r"\d+", arg)
-    print(not success, not failure, a_num)
     if (not success) or (not failure):
-        print(0)
         return help_messages.sc
     if (not a_num) and cards.get(event):
         card_data = cards.get(event)
         a_num = card_data["san"]
         using_card = True
-        print(1)
     elif a_num:
         card_data = {"san": int(a_num.group()), "name": "该调查员"}
     elif not a_num:
-        print(2)
         return help_messages.sc
     check_dice = Dices()
     check_dice.a = True
