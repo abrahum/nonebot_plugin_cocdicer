@@ -34,17 +34,23 @@ def sc(arg: str, event: Event) -> str:
             failure = re.search(r"[\/]+(\d*d\d+|\d+)", arg)
         elif re.search(r"\d+", arg):
             a_num = re.search(r"\d+", arg)
-    if not (success and failure):
+    print(not success, not failure, a_num)
+    if (not success) or (not failure):
+        print(0)
         return help_messages.sc
     if (not a_num) and cards.get(event):
         card_data = cards.get(event)
         a_num = card_data["san"]
         using_card = True
-    else:
+        print(1)
+    elif a_num:
+        card_data = {"san": int(a_num.group()), "name": "该调查员"}
+    elif not a_num:
+        print(2)
         return help_messages.sc
     check_dice = Dices()
     check_dice.a = True
-    check_dice.anum = a_num if using_card else int(a_num.group())
+    check_dice.anum = card_data["san"]
     success = number_or_dice(success.group())
     failure = number_or_dice(failure.group()[1:])
     r = "San Check" + check_dice.roll()[4:]
@@ -63,5 +69,5 @@ def sc(arg: str, event: Event) -> str:
         r += "\n%s陷入了临时性疯狂" % card_data["name"]
     if using_card:
         card_data["san"] -= result
-        cards.update_cards(event, card_data)
+        cards.update(event, card_data)
     return r

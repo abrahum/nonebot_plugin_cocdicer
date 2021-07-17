@@ -141,6 +141,12 @@ nonebot.load_plugin("nonebot_plugin_cocdicer")
 
 ## Change Log
 
+### 0.2.3
+
+- 临时紧急修复 sc 指令逻辑问题（竟然还有人用这个插件）
+- 不保证修完没 bug
+- 用了怎么也不 star （小声bb）
+
 ### 0.2.2
 
 - 增加技能系统
