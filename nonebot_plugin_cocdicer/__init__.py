@@ -64,7 +64,7 @@ async def enhandler(bot: Bot, event: Event):
 @rdcommand.handle()
 async def rdcommandhandler(bot: Bot, event: Event):
     args = str(event.get_message())[2:].strip()
-    uid = event.get_session_id()
+    uid = event.get_user_id()
     if args and not("." in args):
         rrd = rd(args)
         if type(rrd) == str:

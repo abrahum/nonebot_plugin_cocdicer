@@ -141,6 +141,10 @@ nonebot.load_plugin("nonebot_plugin_cocdicer")
 
 ## Change Log
 
+### 0.2.5
+
+- 暗投错误的使用了 get_session_id，已修复使用 get_user_id。
+
 ### 0.2.4
 
 - 临时紧急修复 sc 指令逻辑问题（竟然还有人用这个插件）
