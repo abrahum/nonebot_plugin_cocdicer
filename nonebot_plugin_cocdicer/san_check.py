@@ -2,7 +2,7 @@ from .dices import Dices
 from .messages import help_messages
 from .cards import cards
 
-from nonebot.adapters.cqhttp import Event
+from nonebot.adapters.onebot.v11 import Event
 
 import re
 

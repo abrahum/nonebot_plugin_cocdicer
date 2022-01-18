@@ -141,6 +141,10 @@ nonebot.load_plugin("nonebot_plugin_cocdicer")
 
 ## Change Log
 
+### 0.3.0
+
+- 适配 Nonebot 2.0.0-beta.1
+
 ### 0.2.5
 
 - 暗投错误的使用了 get_session_id，已修复使用 get_user_id。

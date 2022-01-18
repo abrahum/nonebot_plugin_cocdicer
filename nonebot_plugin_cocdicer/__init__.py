@@ -4,10 +4,11 @@ from .investigator import Investigator
 from .san_check import sc
 from .cards import _cachepath, cards, cache_cards, set_handler, show_handler, sa_handler, del_handler
 
-from nonebot import get_driver
+from nonebot import get_driver, get_bot
 from nonebot.rule import Rule
-from nonebot.plugin import on_startswith, on_regex
-from nonebot.adapters.cqhttp import Bot, Event, GroupMessageEvent
+from nonebot.matcher import Matcher
+from nonebot.plugin import on_startswith
+from nonebot.adapters.onebot.v11 import Bot, Event, GroupMessageEvent
 
 import os
 
@@ -15,7 +16,7 @@ driver = get_driver()
 
 
 @driver.on_startup
-async def _on_startup():  # 角色卡暂存目录初始化
+async def _():  # 角色卡暂存目录初始化
     if not os.path.exists("data"):
         os.makedirs("data")
     if not os.path.exists(_cachepath):
@@ -45,26 +46,28 @@ delcommand = on_startswith(".del", priority=5, block=True)
 
 
 @rdhelp.handle()
-async def rdhelphandler(bot: Bot, event: Event):
+async def rdhelphandler(matcher: Matcher, event: Event):
     args = str(event.get_message())[5:].strip()
-    await rdhelp.finish(help_message(args))
+    await matcher.finish(help_message(args))
 
 
 @stcommand.handle()
-async def stcommandhandler(bot: Bot):
-    await rdhelp.finish(st())
+async def stcommandhandler(matcher: Matcher,):
+    await matcher.finish(st())
 
 
 @encommand.handle()
-async def enhandler(bot: Bot, event: Event):
+async def enhandler(matcher: Matcher, event: Event):
     args = str(event.get_message())[3:].strip()
-    await encommand.finish(en(args))
+    await matcher.finish(en(args))
 
 
 @rdcommand.handle()
-async def rdcommandhandler(bot: Bot, event: Event):
+async def rdcommandhandler(_matcher: Matcher, event: Event):
     args = str(event.get_message())[2:].strip()
     uid = event.get_user_id()
+    self_id = event.self_id
+    bot = get_bot(str(self_id))
     if args and not("." in args):
         rrd = rd(args)
         if type(rrd) == str:
@@ -74,56 +77,56 @@ async def rdcommandhandler(bot: Bot, event: Event):
 
 
 @coccommand.handle()
-async def cochandler(bot: Bot, event: Event):
+async def cochandler(matcher: Matcher, event: Event):
     args = str(event.get_message())[4:].strip()
     try:
         args = int(args)
     except ValueError:
         args = 20
     inv = Investigator()
-    await coccommand.send(inv.age_change(args))
+    await matcher.send(inv.age_change(args))
     if 15 <= args < 90:
         cache_cards.update(event, inv.__dict__, save=False)
-        await coccommand.finish(inv.output())
+        await matcher.finish(inv.output())
 
 
 @ticommand.handle()
-async def ticommandhandler(bot: Bot):
-    await ticommand.finish(ti())
+async def ticommandhandler(matcher: Matcher,):
+    await matcher.finish(ti())
 
 
 @licommand.handle()
-async def licommandhandler(bot: Bot):
-    await licommand.finish(li())
+async def licommandhandler(matcher: Matcher,):
+    await matcher.finish(li())
 
 
 @sccommand.handle()
-async def schandler(bot: Bot, event: Event):
+async def schandler(matcher: Matcher, event: Event):
     args = str(event.get_message())[3:].strip().lower()
-    await sccommand.finish(sc(args, event=event))
+    await matcher.finish(sc(args, event=event))
 
 
 @setcommand.handle()
-async def sethandler(bot: Bot, event: Event):
+async def sethandler(matcher: Matcher, event: Event):
     args = str(event.get_message())[4:].strip().lower()
-    await setcommand.finish(set_handler(event, args))
+    await matcher.finish(set_handler(event, args))
 
 
 @showcommand.handle()
-async def showhandler(bot: Bot, event: Event):
+async def showhandler(matcher: Matcher, event: Event):
     args = str(event.get_message())[5:].strip().lower()
     for msg in show_handler(event, args):
-        await showcommand.send(msg)
+        await matcher.send(msg)
 
 
 @sacommand.handle()
-async def sahandler(bot: Bot, event: Event):
+async def sahandler(matcher: Matcher, event: Event):
     args = str(event.get_message())[3:].strip().lower()
-    await sacommand.finish(sa_handler(event, args))
+    await matcher.finish(sa_handler(event, args))
 
 
 @delcommand.handle()
-async def delhandler(bot: Bot, event: Event):
+async def delhandler(matcher: Matcher, event: Event):
     args = str(event.get_message())[4:].strip().lower()
     for msg in del_handler(event, args):
-        await delcommand.send(msg)
+        await matcher.send(msg)

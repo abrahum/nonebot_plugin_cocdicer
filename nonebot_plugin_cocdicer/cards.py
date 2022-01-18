@@ -1,7 +1,7 @@
 from .investigator import Investigator
 from .dices import Dices
-from nonebot.adapters.cqhttp import Event
-from nonebot.adapters.cqhttp.event import GroupMessageEvent
+from nonebot.adapters.onebot.v11 import Event
+from nonebot.adapters.onebot.v11.event import GroupMessageEvent
 from .messages import help_messages
 
 import ujson as json
