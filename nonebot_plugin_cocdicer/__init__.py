@@ -8,7 +8,7 @@ from nonebot import get_driver, get_bot
 from nonebot.rule import Rule
 from nonebot.matcher import Matcher
 from nonebot.plugin import on_startswith
-from nonebot.adapters.onebot.v11 import Bot, Event, GroupMessageEvent
+from nonebot.adapters.onebot.v11 import Bot, MessageEvent, GroupMessageEvent
 
 import os
 
@@ -26,7 +26,7 @@ async def _():  # 角色卡暂存目录初始化
 
 
 def is_group_message() -> Rule:
-    async def _is_group_message(bot: "Bot", event: "Event") -> bool:
+    async def _is_group_message(bot: "Bot", event: "MessageEvent") -> bool:
         return True if type(event) is GroupMessageEvent else False
     return Rule(_is_group_message)
 
@@ -46,28 +46,29 @@ delcommand = on_startswith(".del", priority=5, block=True)
 
 
 @rdhelp.handle()
-async def rdhelphandler(matcher: Matcher, event: Event):
+async def rdhelphandler(matcher: Matcher, event: MessageEvent):
     args = str(event.get_message())[5:].strip()
     await matcher.finish(help_message(args))
 
 
 @stcommand.handle()
-async def stcommandhandler(matcher: Matcher,):
+async def stcommandhandler(matcher: Matcher):
     await matcher.finish(st())
 
 
 @encommand.handle()
-async def enhandler(matcher: Matcher, event: Event):
+async def enhandler(matcher: Matcher, event: MessageEvent):
     args = str(event.get_message())[3:].strip()
     await matcher.finish(en(args))
 
 
 @rdcommand.handle()
-async def rdcommandhandler(_matcher: Matcher, event: Event):
+async def rdcommandhandler(event: MessageEvent):
     args = str(event.get_message())[2:].strip()
     uid = event.get_user_id()
     self_id = event.self_id
     bot = get_bot(str(self_id))
+    assert isinstance(bot, Bot)
     if args and not("." in args):
         rrd = rd(args)
         if type(rrd) == str:
@@ -77,7 +78,7 @@ async def rdcommandhandler(_matcher: Matcher, event: Event):
 
 
 @coccommand.handle()
-async def cochandler(matcher: Matcher, event: Event):
+async def cochandler(matcher: Matcher, event: MessageEvent):
     args = str(event.get_message())[4:].strip()
     try:
         args = int(args)
@@ -101,32 +102,32 @@ async def licommandhandler(matcher: Matcher,):
 
 
 @sccommand.handle()
-async def schandler(matcher: Matcher, event: Event):
+async def schandler(matcher: Matcher, event: MessageEvent):
     args = str(event.get_message())[3:].strip().lower()
     await matcher.finish(sc(args, event=event))
 
 
 @setcommand.handle()
-async def sethandler(matcher: Matcher, event: Event):
+async def sethandler(matcher: Matcher, event: MessageEvent):
     args = str(event.get_message())[4:].strip().lower()
     await matcher.finish(set_handler(event, args))
 
 
 @showcommand.handle()
-async def showhandler(matcher: Matcher, event: Event):
+async def showhandler(matcher: Matcher, event: MessageEvent):
     args = str(event.get_message())[5:].strip().lower()
     for msg in show_handler(event, args):
         await matcher.send(msg)
 
 
 @sacommand.handle()
-async def sahandler(matcher: Matcher, event: Event):
+async def sahandler(matcher: Matcher, event: MessageEvent):
     args = str(event.get_message())[3:].strip().lower()
     await matcher.finish(sa_handler(event, args))
 
 
 @delcommand.handle()
-async def delhandler(matcher: Matcher, event: Event):
+async def delhandler(matcher: Matcher, event: MessageEvent):
     args = str(event.get_message())[4:].strip().lower()
     for msg in del_handler(event, args):
         await matcher.send(msg)

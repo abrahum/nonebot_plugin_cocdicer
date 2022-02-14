@@ -1,17 +1,21 @@
+from typing import Dict, Optional
 from .investigator import Investigator
 from .dices import Dices
-from nonebot.adapters.onebot.v11 import Event
+from nonebot.adapters.onebot.v11 import MessageEvent
 from nonebot.adapters.onebot.v11.event import GroupMessageEvent
 from .messages import help_messages
 
-import ujson as json
+try:
+    import ujson as json
+except ModuleNotFoundError:
+    import json
 
 import os
 import re
 _cachepath = os.path.join("data", "coc_cards.json")
 
 
-def get_group_id(event: Event):
+def get_group_id(event: MessageEvent):
     if type(event) is GroupMessageEvent:
         return str(event.group_id)
     else:
@@ -20,7 +24,7 @@ def get_group_id(event: Event):
 
 class Cards():
     def __init__(self) -> None:
-        self.data: dict = {}
+        self.data: Dict[str, dict] = {}
 
     def save(self) -> None:
         with open(_cachepath, "w", encoding="utf-8") as f:
@@ -30,7 +34,7 @@ class Cards():
         with open(_cachepath, "r", encoding="utf-8") as f:
             self.data = json.load(f)
 
-    def update(self, event: Event, inv_dict: dict, qid: str = "", save: bool = True):
+    def update(self, event: MessageEvent, inv_dict: dict, qid: str = "", save: bool = True):
         group_id = get_group_id(event)
         if not self.data.get(group_id):
             self.data[group_id] = {}
@@ -39,7 +43,7 @@ class Cards():
         if save:
             self.save()
 
-    def get(self, event: Event, qid: str = "") -> dict:
+    def get(self, event: MessageEvent, qid: str = "") -> Optional[Dict[str, dict]]:
         group_id = get_group_id(event)
         if self.data.get(group_id):
             if self.data[group_id].get(qid if qid else str(event.sender.user_id)):
@@ -47,7 +51,7 @@ class Cards():
         else:
             return None
 
-    def delete(self, event: Event, qid: str = "", save: bool = True) -> bool:
+    def delete(self, event: MessageEvent, qid: str = "", save: bool = True) -> bool:
         if self.get(event, qid=qid):
             if self.data[get_group_id(event)].get(qid if qid else str(event.sender.user_id)):
                 self.data[get_group_id(event)].pop(
@@ -57,7 +61,7 @@ class Cards():
             return True
         return False
 
-    def delete_skill(self, event: Event, skill_name: str, qid: str = "", save: bool = True) -> bool:
+    def delete_skill(self, event: MessageEvent, skill_name: str, qid: str = "", save: bool = True) -> bool:
         if self.get(event, qid=qid):
             data = self.get(event, qid=qid)
             if data["skills"].get(skill_name):
@@ -85,7 +89,7 @@ attrs_dict: dict = {
 }
 
 
-def set_handler(event: Event, args: str):
+def set_handler(event: MessageEvent, args: str):
     if not args:
         if cache_cards.get(event):
             card_data = cache_cards.get(event)
@@ -121,7 +125,7 @@ def set_handler(event: Event, args: str):
                 return "请输入正整数技能数据"
 
 
-def show_handler(event: Event, args: str):
+def show_handler(event: MessageEvent, args: str):
     r = []
     if not args:
         if cards.get(event):
@@ -150,7 +154,7 @@ def show_handler(event: Event, args: str):
     return r
 
 
-def del_handler(event: Event, args: str):
+def del_handler(event: MessageEvent, args: str):
     r = []
     args = args.split(" ")
     for arg in args:
@@ -170,7 +174,7 @@ def del_handler(event: Event, args: str):
     return r
 
 
-def sa_handler(event: Event, args: str):
+def sa_handler(event: MessageEvent, args: str):
     if not args:
         return help_messages.sa
     elif not cards.get(event):

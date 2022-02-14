@@ -13,6 +13,8 @@ repository = "https://github.com/abrahum/nonebot_plugin_cocdicer"
 [tool.poetry.dependencies]
 python = "^3.7.3"
 nonebot2 = "^2.0.0-beta.1"
+nonebot-adapter-onebot = "^2.0.0-beta.1"
+ujson = {version = ">=4.0.0", optional = true}
 
 [tool.poetry.dev-dependencies]
 
