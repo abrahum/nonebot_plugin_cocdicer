@@ -141,6 +141,10 @@ nonebot.load_plugin("nonebot_plugin_cocdicer")
 
 ## Change Log
 
+### 0.3.1
+
+- fix dependencies #5
+
 ### 0.3.0
 
 - 适配 Nonebot 2.0.0-beta.1
