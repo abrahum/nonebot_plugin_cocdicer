@@ -1,5 +1,5 @@
 from .util import Bot, MessageEvent, GroupMessageEvent
-from .dices import rd, help_message, st, en
+from .dices import rd, help_message, st, en, rd0
 from .madness import ti, li
 from .investigator import Investigator
 from .san_check import sc
@@ -71,7 +71,7 @@ async def rdcommandhandler(event: MessageEvent):
     bot = get_bot(str(self_id))
     assert isinstance(bot, Bot)
     if args and not("." in args):
-        rrd = rd(args)
+        rrd = rd0(args)
         if type(rrd) == str:
             await rdcommand.finish(rrd)
         elif type(rrd) == list:

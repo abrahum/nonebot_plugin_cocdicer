@@ -1,6 +1,7 @@
 # 参考[OlivaDiceDocs](https://oliva.dicer.wiki/userdoc)实现的nonebot2骰娘插件
 import re
 import random
+import diro
 from .messages import help_messages
 
 
@@ -246,6 +247,28 @@ def rd(arg: str):
         return dices.roll()
     except:
         return help_messages.r
+
+
+def rd0(arg: str) -> str:
+    args = arg.lower().split(" ")
+    d_str = args.pop(0).split("#")
+    try:
+        d = diro.parse(d_str.pop(0))
+        time = 1
+        if len(d_str) > 0:
+            try:
+                time = int(d_str[0])
+            except:
+                pass
+
+        d.roll()
+        r = f"{d}={(d.detail_expr())}={d.calc()}"
+        for _ in range(time-1):
+            d.roll()
+            r = f"{r}\n{d}={(d.detail_expr())}={d.calc()}"
+        return r
+    except ValueError:
+        return help_message.r
 
 
 if __name__ == "__main__":
