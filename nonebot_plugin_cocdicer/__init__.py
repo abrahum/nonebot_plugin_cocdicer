@@ -1,4 +1,4 @@
-from .util import Bot, MessageEvent, GroupMessageEvent
+from .util import MessageEvent, GroupMessageEvent
 from .dices import help_message, st, en, rd0
 from .madness import ti, li
 from .investigator import Investigator
@@ -9,6 +9,9 @@ from nonebot import get_driver, get_bot
 from nonebot.rule import Rule
 from nonebot.matcher import Matcher
 from nonebot.plugin import on_startswith
+from nonebot.adapters import Bot as Bot
+from nonebot.adapters.onebot.v11 import Bot as V11Bot
+from nonebot.adapters.onebot.v12 import Bot as V12Bot
 
 
 import os
@@ -39,6 +42,7 @@ ticommand = on_startswith(".ti", priority=2, block=True)
 licommand = on_startswith(".li", priority=2, block=True)
 coccommand = on_startswith(".coc", priority=2, block=True)
 sccommand = on_startswith(".sc", priority=2, block=True)
+rhcommand = on_startswith(".rh", priority=3, block=True)
 rdcommand = on_startswith(".r", priority=4, block=True)
 setcommand = on_startswith(".set", priority=5, block=True)
 showcommand = on_startswith(".show", priority=5, block=True)
@@ -63,19 +67,26 @@ async def enhandler(matcher: Matcher, event: MessageEvent):
     await matcher.finish(en(args))
 
 
+@rhcommand.handle()
+async def rhcommandhandler(bot: Bot, event: GroupMessageEvent):
+    args = str(event.get_message())[3:].strip()
+    uid = event.get_user_id()
+    if args and not("." in args):
+        print("get here")
+        if isinstance(bot, V12Bot):
+            from nonebot.adapters.onebot.v12 import Message, MessageSegment
+            message = Message()
+            message += MessageSegment.text(rd0(args))
+            await bot.send_message(detail_type="private", user_id=uid, message=message)
+        elif isinstance(bot, V11Bot):
+            await bot.send_private_msg(user_id=uid, message=rd0(args))
+
+
 @rdcommand.handle()
 async def rdcommandhandler(event: MessageEvent):
     args = str(event.get_message())[2:].strip()
-    uid = event.get_user_id()
-    self_id = event.self_id
-    bot = get_bot(str(self_id))
-    assert isinstance(bot, Bot)
     if args and not("." in args):
-        rrd = rd0(args)
-        if type(rrd) == str:
-            await rdcommand.finish(rrd)
-        elif type(rrd) == list:
-            await bot.send_private_msg(user_id=uid, message=rrd[0])
+        await rdcommand.finish(rd0(args))
 
 
 @coccommand.handle()
