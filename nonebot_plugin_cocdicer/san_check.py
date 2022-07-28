@@ -2,7 +2,7 @@ from .dices import Dices
 from .messages import help_messages
 from .cards import cards
 
-from nonebot.adapters.onebot.v11 import Event
+from .util import MessageEvent
 
 import re
 
@@ -22,7 +22,7 @@ def number_or_dice(arg: str):
         return int(arg)
 
 
-def sc(arg: str, event: Event) -> str:
+def sc(arg: str, event: MessageEvent) -> str:
     args = arg.split(" ")
     a_num = success = failure = None
     using_card = False

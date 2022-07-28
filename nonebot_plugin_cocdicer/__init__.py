@@ -1,3 +1,4 @@
+from .util import Bot, MessageEvent, GroupMessageEvent
 from .dices import rd, help_message, st, en
 from .madness import ti, li
 from .investigator import Investigator
@@ -8,7 +9,7 @@ from nonebot import get_driver, get_bot
 from nonebot.rule import Rule
 from nonebot.matcher import Matcher
 from nonebot.plugin import on_startswith
-from nonebot.adapters.onebot.v11 import Bot, MessageEvent, GroupMessageEvent
+
 
 import os
 
@@ -26,7 +27,7 @@ async def _():  # 角色卡暂存目录初始化
 
 
 def is_group_message() -> Rule:
-    async def _is_group_message(bot: "Bot", event: "MessageEvent") -> bool:
+    async def _is_group_message(bot: Bot, event: MessageEvent) -> bool:
         return True if type(event) is GroupMessageEvent else False
     return Rule(_is_group_message)
 

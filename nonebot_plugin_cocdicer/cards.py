@@ -1,8 +1,7 @@
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 from .investigator import Investigator
 from .dices import Dices
-from nonebot.adapters.onebot.v11 import MessageEvent
-from nonebot.adapters.onebot.v11.event import GroupMessageEvent
+from .util import MessageEvent, GroupMessageEvent
 from .messages import help_messages
 
 try:
@@ -73,7 +72,7 @@ class Cards():
 
 cards = Cards()
 cache_cards = Cards()
-attrs_dict: dict = {
+attrs_dict: Dict[str, List[str]] = {
     "名字": ["name", "名字", "名称"],
     "年龄": ["age", "年龄"],
     "力量": ["str", "力量"],
