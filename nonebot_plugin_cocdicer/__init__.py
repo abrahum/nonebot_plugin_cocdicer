@@ -74,10 +74,8 @@ async def rhcommandhandler(bot: Bot, event: GroupMessageEvent):
     if args and not("." in args):
         print("get here")
         if isinstance(bot, V12Bot):
-            from nonebot.adapters.onebot.v12 import Message, MessageSegment
-            message = Message()
-            message += MessageSegment.text(rd0(args))
-            await bot.send_message(detail_type="private", user_id=uid, message=message)
+            from nonebot.adapters.onebot.v12 import  MessageSegment
+            await bot.send_message(detail_type="private", user_id=uid, message=[MessageSegment.text(rd0(args))])
         elif isinstance(bot, V11Bot):
             await bot.send_private_msg(user_id=uid, message=rd0(args))
 

@@ -37,6 +37,7 @@ nonebot.load_plugin("nonebot_plugin_cocdicer")
 - Done or Will be done soon
 
     - [x] .r    投掷指令
+    - [x] .rh   暗投指令
     - [x] .sc   san check
     - [x] .st   射击命中判定
     - [x] .ti   临时疯狂症状
@@ -59,26 +60,27 @@ nonebot.load_plugin("nonebot_plugin_cocdicer")
 
 ## 指令详解
 
+以下指令中 `<expr>` 均指骰子表达式，`[xx]` 表示 int ，具体可以参照 [diro](https://github.com/abrahum/diro) 以及 [onedice](https://github.com/OlivOS-Team/onedice)
+
 ```
-.r[dah#bp] a_number [+/-]ex_number
+.r<expr>#[times] [anum]
 ```
-- d：骰子设定指令，标准格式为 xdy ， x 为骰子数量 y 为骰子面数， x 为1时可以省略， y 为100时可以省略；
-- a：检定指令，根据后续 a_number 设定数值检定，注意 a 必须位于 a_number 之前，且 a_number 前需使用空格隔开；
-- h：暗骰指令，骰子结构将会私聊发送给该指令者；（没测试过非好友，可以的话先加好友吧）
-- #：多轮投掷指令， # 后接数字即可设定多轮投掷，注意 # 后数字无需空格隔开；
-- b：奖励骰指令，仅对 D100 有效，每个 b 表示一个奖励骰；
-- p：惩罚骰指令，同奖励骰；
-- +/-：附加计算指令，目前仅支持数字，同样无需空格隔开。
+
+- #：多轮投掷指令，# 后接数字即可设定多轮投掷。
+- anum：检定数值（后续将会支持属性检定）
 
 > 举几个栗子：
-> - `.r#2bba 70`：两次投掷 1D100 ，附加两个奖励骰，判定值为70；
-> - `.rah`：D100暗骰，由于没有 a_number 参数，判定将被忽略；
+> - `.rdbba#2 70`：两次投掷 1D100 ，附加两个奖励骰，判定值为70；
 > - `.ra2d8+10 70`：2D8+10，由于非D100，判定将被忽略。
 
-以上指令理论上均可随意变更顺序并嵌套使用，如果不能，就是出bug了_(:3」∠)_
+```
+.rh<expr>#<times> <anum>
+```
+
+除了是暗投，应该和 .r 完全一致
 
 ```
-.sc success/failure [san_number]
+.sc <success>/<failure> [san_number]
 ```
 - success：判定成功降低 san 值，支持 x 或 xdy 语法（ x 与 y 为数字）；
 - failure：判定失败降低 san 值，支持语法如上；
@@ -140,6 +142,11 @@ nonebot.load_plugin("nonebot_plugin_cocdicer")
 - 以上指令支持多个混合使用，多个参数使用空格隔开
 
 ## Change Log
+
+### 0.4.0
+
+- use diro-py
+- support OneBot V12
 
 ### 0.3.1
 
