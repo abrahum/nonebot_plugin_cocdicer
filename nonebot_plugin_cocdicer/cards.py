@@ -1,8 +1,10 @@
 from typing import Dict, List, Optional
 from .investigator import Investigator
-from .dices import Dices
 from .util import MessageEvent, GroupMessageEvent
 from .messages import help_messages
+from .dices import expr
+
+import diro
 
 try:
     import ujson as json
@@ -183,7 +185,5 @@ def sa_handler(event: MessageEvent, args: str):
             arg = alias[0]
             break
     card_data = cards.get(event)
-    dices = Dices()
-    dices.a = True
-    dices.anum = card_data[arg]
-    return dices.roll()
+    dices = diro.parse("")
+    return expr(dices, card_data[arg])

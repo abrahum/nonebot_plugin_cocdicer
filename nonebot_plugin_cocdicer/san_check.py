@@ -1,69 +1,40 @@
-from .dices import Dices
 from .messages import help_messages
 from .cards import cards
-
 from .util import MessageEvent
 
-import re
-
-
-def number_or_dice(arg: str):
-    if "d" in arg:
-        d = Dices()
-        dices = re.search(r"\d+d", arg)
-        if dices:
-            d.dices = int(dices.group()[:-1])
-        faces = re.search(r"d\d+", arg)
-        if faces:
-            d.faces = int(faces.group()[1:])
-        d.roll()
-        return d
-    else:
-        return int(arg)
+import diro
 
 
 def sc(arg: str, event: MessageEvent) -> str:
-    args = arg.split(" ")
-    a_num = success = failure = None
-    using_card = False
-    for arg in args:
-        if not arg:
-            continue
-        elif re.search(r"\/", arg):
-            success = re.search(r"\d*d\d+|\d+", arg)
-            failure = re.search(r"[\/]+(\d*d\d+|\d+)", arg)
-        elif re.search(r"\d+", arg):
-            a_num = re.search(r"\d+", arg)
-    if (not success) or (not failure):
+    try:
+        args = arg.split(" ")
+        using_card = False
+        s_and_f = args[0].split("/")
+        success = diro.parse(s_and_f[0])
+        success.roll()
+        success = success.calc()
+        failure = diro.parse(s_and_f[1])
+        failure.roll()
+        failure = failure.calc()
+        if len(args) > 1:
+            card = {"san": int(args[1]), "name": "该调查员"}
+            using_card = False
+        else:
+            card = cards.get(event)
+            using_card = True
+        r = diro.Dice().roll()()
+        s = f"San Check:{r}"
+        down = success if r <= card["san"] else failure
+        s += f"理智降低了{down}点"
+        if down >= card["san"]:
+            s += "\n%s陷入了永久性疯狂" % card["name"]
+        elif down >= (card["san"] // 5):
+            s += "\n%s陷入了不定性疯狂" % card["name"]
+        elif down >= 5:
+            s += "\n%s陷入了临时性疯狂" % card["name"]
+        if using_card:
+            card["san"] -= down
+            cards.update(event, card)
+        return s
+    except:
         return help_messages.sc
-    if (not a_num) and cards.get(event):
-        card_data = cards.get(event)
-        a_num = card_data["san"]
-        using_card = True
-    elif a_num:
-        card_data = {"san": int(a_num.group()), "name": "该调查员"}
-    elif not a_num:
-        return help_messages.sc
-    check_dice = Dices()
-    check_dice.a = True
-    check_dice.anum = card_data["san"]
-    success = number_or_dice(success.group())
-    failure = number_or_dice(failure.group()[1:])
-    r = "San Check" + check_dice.roll()[4:]
-    result = success if check_dice.result <= check_dice.anum else failure
-    r += "\n理智降低了"
-    if type(result) is int:
-        r += "%d点" % result
-    else:
-        r = r + result._head + str(result.result)
-        result = result.result
-    if result >= card_data["san"]:
-        r += "\n%s陷入了永久性疯狂" % card_data["name"]
-    elif result >= (card_data["san"] // 5):
-        r += "\n%s陷入了不定性疯狂" % card_data["name"]
-    elif result >= 5:
-        r += "\n%s陷入了临时性疯狂" % card_data["name"]
-    if using_card:
-        card_data["san"] -= result
-        cards.update(event, card_data)
-    return r

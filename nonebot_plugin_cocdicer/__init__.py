@@ -1,5 +1,5 @@
 from .util import Bot, MessageEvent, GroupMessageEvent
-from .dices import rd, help_message, st, en, rd0
+from .dices import help_message, st, en, rd0
 from .madness import ti, li
 from .investigator import Investigator
 from .san_check import sc
