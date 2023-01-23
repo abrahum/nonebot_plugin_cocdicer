@@ -1,16 +1,12 @@
 import random
 
 
-build_dict = {64: -2, 84: -1, 124: 0, 164: 1,
-              204: 2, 284: 3, 364: 4, 444: 5, 524: 6}
-db_dict = {-2: "-2", -1: "-1", 0: "0", 1: "1d4",
-           2: "1d6", 3: "2d6", 4: "3d6", 5: "4d6", 6: "5d6"}
+build_dict = {64: -2, 84: -1, 124: 0, 164: 1, 204: 2, 284: 3, 364: 4, 444: 5, 524: 6}
+db_dict = {-2: "-2", -1: "-1", 0: "0", 1: "1d4", 2: "1d6", 3: "2d6", 4: "3d6", 5: "4d6", 6: "5d6"}
 
 
 def randattr(time: int = 3, ex: int = 0):
-    r = 0
-    for _ in range(time):
-        r += random.randint(1, 6)
+    r = sum(random.randint(1, 6) for _ in range(time))
     return (r+ex)*5
 
 
@@ -30,12 +26,9 @@ class Investigator(object):
         self.san = self.pow
         self.skills = {}
 
-    def body_build(self) -> int:
+    def body_build(self):
         build = self.str + self.con
-        for i, j in build_dict.items():
-            if build <= i:
-                return j
-        return
+        return next((j for i, j in build_dict.items() if build <= i), -2)
 
     def db(self) -> str:
         return db_dict[self.body_build()]
@@ -64,43 +57,38 @@ class Investigator(object):
 
     def edu_up(self) -> str:
         edu_check = random.randint(1, 100)
-        if edu_check > self.edu:
-            edu_en = random.randint(1, 10)
-            self.edu += edu_en
-        else:
+        if edu_check <= self.edu:
             return "教育成长检定D100=%d，小于%d，无增长。" % (edu_check, self.edu)
-        if self.edu > 99:
-            self.edu = 99
-            return "教育成长检定D100=%d，成长1D10=%d，成长到了最高值99！" % (edu_check, edu_en)
-        else:
+        edu_en = random.randint(1, 10)
+        self.edu += edu_en
+        if self.edu <= 99:
             return "教育成长检定D100=%d，成长1D10=%d，成长到了%d" % (edu_check, edu_en, self.edu)
+        self.edu = 99
+        return "教育成长检定D100=%d，成长1D10=%d，成长到了最高值99！" % (edu_check, edu_en)
 
     def edu_ups(self, times) -> str:
-        r = ""
-        for _ in range(times):
-            r += self.edu_up()
-        return r
+        return "".join(self.edu_up() for _ in range(times))
 
-    def sum_down(self, sum) -> str:
-        if self.str + self.con + self.dex-45 < sum:
+    def sum_down(self, sum_):
+        if self.str + self.con + self.dex-45 < sum_:
             self.str = 15
             self.con = 15
             self.dex = 15
         else:
-            str_lost = random.randint(0, min(sum, self.str-15))
-            while sum - str_lost > self.con + self.dex-30:
-                str_lost = random.randint(0, min(sum, self.str-15))
+            str_lost = random.randint(0, min(sum_, self.str - 15))
+            while sum_ - str_lost > self.con + self.dex-30:
+                str_lost = random.randint(0, min(sum_, self.str - 15))
             self.str -= str_lost
-            sum -= str_lost
-            con_lost = random.randint(0, min(sum, self.con-15))
-            while sum - con_lost > self.dex-15:
-                con_lost = random.randint(0, min(sum, self.con-15))
+            sum_ -= str_lost
+            con_lost = random.randint(0, min(sum_, self.con - 15))
+            while sum_ - con_lost > self.dex-15:
+                con_lost = random.randint(0, min(sum_, self.con - 15))
             self.con -= con_lost
-            sum -= con_lost
-            self.dex -= sum
+            sum_ -= con_lost
+            self.dex -= sum_
         return
 
-    def age_change(self, age: int = 20) -> str:
+    def age_change(self, age: int = 20):
         if self.age != 20:
             return  # 防止多次年龄增强判定
         if age < 15:
@@ -138,7 +126,7 @@ class Investigator(object):
             self.sum_down(40)
             self.edu_ups(4)
             return "外貌-20，力量、体型、敏捷合计降低40，教育增强判定四次"
-        elif age < 90:
+        else:
             self.app -= 25
             self.sum_down(80)
             self.edu_ups(4)
@@ -150,8 +138,8 @@ class Investigator(object):
 
     def skills_output(self) -> str:
         if not self.skills:
-            return "%s当前无任何技能数据。" % self.name
-        r = "%s技能数据:" % self.name
+            return f"{self.name}当前无任何技能数据。"
+        r = f"{self.name}技能数据:"
         for k, v in self.skills.items():
             r += "\n%s:%d" % (k, v)
         return r
@@ -162,3 +150,6 @@ class Investigator(object):
     def load(self, data: dict):
         self.__dict__.update(data)
         return self
+
+    def dump(self):
+        return self.__dict__

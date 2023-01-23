@@ -1,79 +1,15 @@
 from typing import Dict, List, Optional
+
+import ujson
+
 from .investigator import Investigator
-from .util import MessageEvent, GroupMessageEvent
-from .messages import help_messages
-from .dices import expr
+from .constant import help_sc, help_del_, help_sa
+from .rd import expr
 
 import diro
 
-try:
-    import ujson as json
-except ModuleNotFoundError:
-    import json
+from pathlib import Path
 
-import os
-import re
-_cachepath = os.path.join("data", "coc_cards.json")
-
-
-def get_group_id(event: MessageEvent):
-    if type(event) is GroupMessageEvent:
-        return str(event.group_id)
-    else:
-        return "0"
-
-
-class Cards():
-    def __init__(self) -> None:
-        self.data: Dict[str, dict] = {}
-
-    def save(self) -> None:
-        with open(_cachepath, "w", encoding="utf-8") as f:
-            json.dump(self.data, f, ensure_ascii=False)
-
-    def load(self) -> None:
-        with open(_cachepath, "r", encoding="utf-8") as f:
-            self.data = json.load(f)
-
-    def update(self, event: MessageEvent, inv_dict: dict, qid: str = "", save: bool = True):
-        group_id = get_group_id(event)
-        if not self.data.get(group_id):
-            self.data[group_id] = {}
-        self.data[group_id].update(
-            {qid if qid else str(event.sender.user_id): inv_dict})
-        if save:
-            self.save()
-
-    def get(self, event: MessageEvent, qid: str = "") -> Optional[Dict[str, dict]]:
-        group_id = get_group_id(event)
-        if self.data.get(group_id):
-            if self.data[group_id].get(qid if qid else str(event.sender.user_id)):
-                return self.data[group_id].get(qid if qid else str(event.sender.user_id))
-        else:
-            return None
-
-    def delete(self, event: MessageEvent, qid: str = "", save: bool = True) -> bool:
-        if self.get(event, qid=qid):
-            if self.data[get_group_id(event)].get(qid if qid else str(event.sender.user_id)):
-                self.data[get_group_id(event)].pop(
-                    qid if qid else str(event.sender.user_id))
-            if save:
-                self.save()
-            return True
-        return False
-
-    def delete_skill(self, event: MessageEvent, skill_name: str, qid: str = "", save: bool = True) -> bool:
-        if self.get(event, qid=qid):
-            data = self.get(event, qid=qid)
-            if data["skills"].get(skill_name):
-                data["skills"].pop(skill_name)
-                self.update(event, data, qid=qid, save=save)
-                return True
-        return False
-
-
-cards = Cards()
-cache_cards = Cards()
 attrs_dict: Dict[str, List[str]] = {
     "名字": ["name", "名字", "名称"],
     "年龄": ["age", "年龄"],
@@ -90,100 +26,200 @@ attrs_dict: Dict[str, List[str]] = {
 }
 
 
-def set_handler(event: MessageEvent, args: str):
-    if not args:
-        if cache_cards.get(event):
-            card_data = cache_cards.get(event)
-            cards.update(event, inv_dict=card_data)
-            inv = Investigator().load(card_data)
-            return "成功从缓存保存人物卡属性：\n" + inv.output()
+class Cards:
+    def __init__(self, filepath: str) -> None:
+        self.path: Path = Path(filepath)
+        self.data: Dict[str, Dict[str, dict]] = {}
+        self.cache: Dict[str, Dict[str, dict]] = {}
+
+    def save(self) -> None:
+        with self.path.open("w", encoding="utf-8") as f:
+            ujson.dump(self.data, f, ensure_ascii=False, indent=2)
+
+    def load(self) -> None:
+        if not self.path.exists():
+            self.path.parent.mkdir(parents=True, exist_ok=True)
+            with self.path.open("w+", encoding="utf-8") as f:
+                self.data = {}
+                ujson.dump({}, f, ensure_ascii=False, indent=2)
         else:
-            return "未找到缓存数据，请先使用coc指令生成角色"
-    else:
-        args = args.split(" ")
-        if cards.get(event):
-            card_data = cards.get(event)
-            inv = Investigator().load(card_data)
+            with self.path.open("r", encoding="utf-8") as f:
+                self.data = ujson.load(f)
+
+    def update(self, inv_dict: dict, level: str = '0', uid: int = 0, save: bool = True):
+        uid = str(uid)
+        data = self.data.setdefault(level, {})
+        data.update({uid: inv_dict})
+        if save:
+            self.save()
+
+    def get(self, level: str = '0', uid: int = 0) -> Optional[Dict[str, dict]]:
+        return data.get(str(uid)) if (data := self.data.get(level)) else None
+
+    def delete(self, level: str = '0', uid: int = 0, save: bool = True) -> bool:
+        if inv := self.get(level, uid):
+            inv.clear()
+            self.data[level].pop(str(uid), None)
+            if not self.data[level]:
+                del self.data[level]
+            if save:
+                self.save()
+            return True
+        return False
+
+    def delete_skill(self, skill_name: str, level: str = '0', uid: int = 0, save: bool = True) -> bool:
+        if (inv := self.get(level, uid)) and inv.get("skills", {}).get(skill_name):
+            del inv["skills"][skill_name]
+            self.update(inv, level, uid, save=save)
+            return True
+        return False
+
+    def cache_update(self, inv_dict: dict, level: str = '0', uid: int = 0):
+        uid = str(uid)
+        data = self.cache.setdefault(level, {})
+        data.update({uid: inv_dict})
+
+    def cache_get(self, level: str = '0', uid: int = 0) -> Optional[Dict[str, dict]]:
+        return cache.get(str(uid)) if (cache := self.cache.get(level)) else None
+
+    def cache_delete(self, level: str = '0', uid: int = 0) -> bool:
+        if inv := self.cache_get(level, uid):
+            inv.clear()
+            self.cache[level].pop(str(uid), None)
+            if not self.cache[level]:
+                del self.cache[level]
+            return True
+        return False
+
+    def cache_delete_skill(self, skill_name: str, level: str = '0', uid: int = 0) -> bool:
+        if (inv := self.cache_get(level, uid)) and inv.get("skills", {}).get(skill_name):
+            del inv["skills"][skill_name]
+            self.cache_update(inv, level, uid)
+            return True
+        return False
+
+    def set_handler(
+        self,
+        name: Optional[str] = None,
+        num: Optional[str] = None,
+        level: str = '0',
+        uid: int = 0
+    ):
+        if not name and not num:
+            if card_data := self.cache_get(level, uid):
+                self.update(card_data, level, uid)
+                inv = Investigator().load(card_data)
+                return "成功从缓存保存人物卡属性：\n" + inv.output()
+            return "未找到缓存数据，请先使用wcoc指令生成角色"
         else:
-            return "未找到已保存数据，请先使用空白set指令保存角色数据"
-        if len(args) >= 2:
+            if card_data := self.get(level, uid):
+                inv = Investigator().load(card_data)
+            else:
+                return "未找到已保存数据，请先使用空白set指令保存角色数据"
+            if not name or not num:
+                return "缺少角色数据或者属性"
             for attr, alias in attrs_dict.items():
-                if args[0] in alias:
+                if name in alias:
                     if attr == "名字":
-                        inv.__dict__[alias[0]] = args[1]
+                        inv.dump()[alias[0]] = num
+                    elif num.isdigit():
+                        inv.dump()[alias[0]] = int(num)
                     else:
-                        try:
-                            inv.__dict__[alias[0]] = int(args[1])
-                        except ValueError:
-                            return "请输入正整数属性数据"
-                    cards.update(event, inv.__dict__)
-                    return "设置调查员%s为：%s" % (attr, args[1])
-            try:
-                inv.skills[args[0]] = int(args[1])
-                cards.update(event, inv.__dict__)
-                return "设置调查员%s技能为：%s" % (args[0], args[1])
-            except ValueError:
-                return "请输入正整数技能数据"
+                        return "请输入正整数属性数据"
+                    self.update(inv.dump(), level, uid)
+                    return f"设置调查员{attr}为：{num}"
+            if num.isdigit():
+                inv.skills[name] = int(num)
+                self.update(inv.dump(), level, uid)
+                return f"设置调查员{name}技能为：{num}"
+            return "请输入正整数技能数据"
 
-
-def show_handler(event: MessageEvent, args: str):
-    r = []
-    if not args:
-        if cards.get(event):
-            card_data = cards.get(event)
-            inv = Investigator().load(card_data)
-            r.append("使用中人物卡：\n" + inv.output())
-        if cache_cards.get(event):
-            card_data = cache_cards.get(event)
-            inv = Investigator().load(card_data)
-            r.append("已暂存人物卡：\n" + inv.output())
-    elif args == "s":
-        if cards.get(event):
-            card_data = cards.get(event)
-            inv = Investigator().load(card_data)
-            r.append(inv.skills_output())
-    elif re.search(r"\[cq:at,qq=\d+\]", args):
-        qid = re.search(r"\[cq:at,qq=\d+\]", args).group()[10:-1]
-        if cards.get(event, qid=qid):
-            card_data = cards.get(event, qid=qid)
+    def show_handler(self, level: str = "0", uid: int = 0):
+        r = []
+        if card_data := self.get(level, uid):
             inv = Investigator().load(card_data)
             r.append("查询到人物卡：\n" + inv.output())
-            if args[0] == "s":
-                r.append(inv.skills_output())
-    if not r:
-        r.append("无保存/暂存信息")
-    return r
+        if card_cache := self.cache_get(level, uid):
+            inv = Investigator().load(card_cache)
+            r.append("已暂存人物卡：\n" + inv.output())
+        if not r:
+            r.append("无保存/暂存信息")
+        return r
 
+    def show_skill_handler(self, level: str = "0", uid: int = 0):
+        if card_data := self.get(level, uid):
+            return Investigator().load(card_data).skills_output()
+        return "无保存/暂存信息"
 
-def del_handler(event: MessageEvent, args: str):
-    r = []
-    args = args.split(" ")
-    for arg in args:
-        if not arg:
-            pass
-        elif arg == "c" and cache_cards.get(event):
-            if cache_cards.delete(event, save=False):
-                r.append("已清空暂存人物卡数据")
-        elif arg == "card" and cards.get(event):
-            if cards.delete(event):
-                r.append("已删除使用中的人物卡！")
+    def del_handler(self, args: List[str], level: str = "0", uid: int = 0):
+        r = []
+        for arg in args:
+            if not arg:
+                continue
+            if arg == "c" and self.cache_get(level, uid):
+                if self.cache_delete(level, uid):
+                    r.append("已清空暂存人物卡数据")
+            elif arg == "card" and self.get(level, uid):
+                if self.delete(level, uid):
+                    r.append("已删除使用中的人物卡！")
+            elif self.delete_skill(arg, level, uid):
+                r.append(f"已删除技能{arg}")
+        if not r:
+            r.append(help_del_)
+        return r
+
+    def ra_handler(self, args: str, exp: int = -1, level: str = "0", uid: int = 0):
+        if not args:
+            return help_sa
+        if card_data := self.get(level, uid):
+            for attr, alias in attrs_dict.items():
+                if args in alias:
+                    arg = alias[0]
+                    value = card_data[arg]
+                    break
+            else:
+                inv = Investigator().load(card_data)
+                if inv.skills.get(args):
+                    value = inv.skills[args]
+                elif exp < 0:
+                    return "请输入正确的别名，或传入检定值"
+                else:
+                    value = exp
+        elif exp < 0:
+            return "请先使用set指令保存人物卡后使用快速检定功能，或传入检定值"
         else:
-            if cards.delete_skill(event, arg):
-                r.append("已删除技能"+arg)
-    if not r:
-        r.append(help_messages.del_)
-    return r
+            value = exp
+        dices = diro.parse("1D100")
+        return f"{args}检定:\n{expr(dices, value)}" if isinstance(value, int) else "请输入正确的别名，或传入检定值"
 
-
-def sa_handler(event: MessageEvent, args: str):
-    if not args:
-        return help_messages.sa
-    elif not cards.get(event):
-        return "请先使用set指令保存人物卡后再使用快速检定功能。"
-    for attr, alias in attrs_dict.items():
-        if args in alias:
-            arg = alias[0]
-            break
-    card_data = cards.get(event)
-    dices = diro.parse("")
-    return expr(dices, card_data[arg])
+    def sc_handler(self, sf: str, san: Optional[int] = None, level: str = "0", uid: int = 0) -> str:
+        try:
+            s_and_f = sf.split("/")
+            success = diro.parse(s_and_f[0])
+            success.roll()
+            success = success.calc()
+            failure = diro.parse(s_and_f[1])
+            failure.roll()
+            failure = failure.calc()
+            if san:
+                card = {"san": san, "name": "该调查员"}
+                using_card = False
+            else:
+                card = self.get(level, uid)
+                using_card = True
+            r = diro.Dice().roll()()
+            s = f"San Check:{r}"
+            down = success if r <= card["san"] else failure
+            s += f"理智降低了{down}点"
+            if down >= card["san"]:
+                s += "\n%s陷入了永久性疯狂" % card["name"]
+            elif down >= (card["san"] // 5):
+                s += "\n%s陷入了不定性疯狂" % card["name"]
+            elif down >= 5:
+                s += "\n%s陷入了临时性疯狂" % card["name"]
+            if using_card:
+                card["san"] -= down
+                self.update(card, level, uid)
+            return s
+        except (IndexError, KeyError):
+            return help_sc

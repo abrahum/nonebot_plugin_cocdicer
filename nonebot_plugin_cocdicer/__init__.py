@@ -31,7 +31,8 @@ async def _():  # 角色卡暂存目录初始化
 
 def is_group_message() -> Rule:
     async def _is_group_message(bot: Bot, event: MessageEvent) -> bool:
-        return True if type(event) is GroupMessageEvent else False
+        return type(event) is GroupMessageEvent
+
     return Rule(_is_group_message)
 
 
@@ -71,7 +72,7 @@ async def enhandler(matcher: Matcher, event: MessageEvent):
 async def rhcommandhandler(bot: Bot, event: GroupMessageEvent):
     args = str(event.get_message())[3:].strip()
     uid = event.get_user_id()
-    if args and not("." in args):
+    if args and "." not in args:
         print("get here")
         if isinstance(bot, V12Bot):
             from nonebot.adapters.onebot.v12 import  MessageSegment
@@ -83,7 +84,7 @@ async def rhcommandhandler(bot: Bot, event: GroupMessageEvent):
 @rdcommand.handle()
 async def rdcommandhandler(event: MessageEvent):
     args = str(event.get_message())[2:].strip()
-    if args and not("." in args):
+    if args and "." not in args:
         await rdcommand.finish(rd0(args))
 
 
