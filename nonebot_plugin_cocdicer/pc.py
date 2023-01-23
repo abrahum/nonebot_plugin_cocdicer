@@ -219,6 +219,7 @@ def coc6(num: int) -> str:
     return mans[1:]
 
 
+# TODO: 把investigator迁移过来
 # class PlayerCard:
 #     def __init__(self, name: str = "匿名调查员"):
 #         self.name = name

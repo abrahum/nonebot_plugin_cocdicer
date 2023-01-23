@@ -1,9 +1,9 @@
 from typing import Dict, List, Optional
 
-import ujson
+import json
 
 from .investigator import Investigator
-from .constant import help_sc, help_del_, help_sa
+from .constant import help_sc, help_del_, help_ra
 from .rd import expr
 
 import diro
@@ -25,7 +25,7 @@ attrs_dict: Dict[str, List[str]] = {
     "理智": ["san", "理智"],
 }
 
-
+# TODO: setcoc 设置房规
 class Cards:
     def __init__(self, filepath: str) -> None:
         self.path: Path = Path(filepath)
@@ -34,17 +34,17 @@ class Cards:
 
     def save(self) -> None:
         with self.path.open("w", encoding="utf-8") as f:
-            ujson.dump(self.data, f, ensure_ascii=False, indent=2)
+            json.dump(self.data, f, ensure_ascii=False, indent=2)
 
     def load(self) -> None:
         if not self.path.exists():
             self.path.parent.mkdir(parents=True, exist_ok=True)
             with self.path.open("w+", encoding="utf-8") as f:
                 self.data = {}
-                ujson.dump({}, f, ensure_ascii=False, indent=2)
+                json.dump({}, f, ensure_ascii=False, indent=2)
         else:
             with self.path.open("r", encoding="utf-8") as f:
-                self.data = ujson.load(f)
+                self.data = json.load(f)
 
     def update(self, inv_dict: dict, level: str = '0', uid: int = 0, save: bool = True):
         uid = str(uid)
@@ -170,7 +170,7 @@ class Cards:
 
     def ra_handler(self, args: str, exp: int = -1, level: str = "0", uid: int = 0):
         if not args:
-            return help_sa
+            return help_ra
         if card_data := self.get(level, uid):
             for attr, alias in attrs_dict.items():
                 if args in alias:

@@ -25,6 +25,32 @@ SuccessLevel = {
     5: "大成功",
 }
 
+help_main = (
+    "本骰娘由nonebot2强力驱动\n"
+    ".r    投掷指令 todo\n"
+    "    d   制定骰子面数\n"
+    "    a   检定\n"
+    "    h   暗骰\n"
+    "    #   多轮检定\n"
+    "    bp  奖励骰&惩罚骰\n"
+    "    +/- 附加计算  todo\n"
+    ".draw 抽牌\n"
+    ".sc   疯狂检定\n"
+    ".st   射击命中判定\n"
+    ".ti   临时疯狂症状\n"
+    ".li   总结疯狂症状\n"
+    ".dnd  dnd角色作成\n"
+    ".coc  coc角色作成\n"
+    ".wcoc coc7角色作成并存入角色卡"
+    ".help 帮助信息\n"
+    ".en   技能成长\n"
+    ".set  角色卡设定\n"
+    ".show 角色卡查询\n"
+    ".ra   快速检定\n"
+    ".del  删除数据\n"
+    "输入.help+指令名获取详细信息"
+)
+
 help_r = (
     "投掷指令\n"
     ".r[dah#bp] a_number\n"
@@ -41,11 +67,7 @@ help_sc = (
     "failure：判定失败降低san值，支持语法如上；\n"
     "san_number：当前san值，缺省san_number将会自动使用保存的人物卡数据。"
 )
-help_en = (
-    "技能成长\n"
-    ".en skill_level\n"
-    "skill_level：需要成长的技能当前等级。"
-)
+help_en = "技能成长\n" ".en skill_level\n" "skill_level：需要成长的技能当前等级。"
 help_set = (
     "角色卡设定\n"
     ".set [attr_name] [attr_num]\n"
@@ -54,16 +76,9 @@ help_set = (
     "可以单独输入.set指令，骰娘将自动读取最近一次coc指令结果进行保存"
 )
 help_show = (
-    "角色卡查询\n"
-    ".show[s] [@xxx]\n" 
-    "查看指定调查员保存的人物卡，缺省at则查询自身人物卡\n" 
-    ".shows 为查看技能指令"
+    "角色卡查询\n" ".show[s] [@xxx]\n" "查看指定调查员保存的人物卡，缺省at则查询自身人物卡\n" ".shows 为查看技能指令"
 )
-help_sa = (
-    "快速检定\n"
-    ".sa [attr_name] [attr_num]\n" 
-    "attr_name：属性名称，例:name、名字、str、力量"
-)
+help_ra = "快速检定\n" ".ra [attr_name] [attr_num]\n" "attr_name：属性名称，例:name、名字、str、力量"
 
 help_del_ = (
     "删除数据\n"
@@ -74,6 +89,16 @@ help_del_ = (
     "xxx:其他任意技能名\n"
     "该命令支持多个参数混合使用，可以一次指定多个技能名，使用空格隔开"
 )
+
+helps = {
+    "r": help_r,
+    "sc": help_sc,
+    "en": help_en,
+    "set": help_set,
+    "show": help_show,
+    "ra": help_ra,
+    "del": help_del_
+}
 
 SkillNameReplace = {
     "str": "力量",
@@ -303,7 +328,13 @@ ExpressionCOC7 = {
     "火焰喷射器": "2D6",
     "轻型反坦克炮": "8D10",
 }
-AutoFillCOC7 = {"生命": "[体质体型和]/10", "理智": "&意志", "魔法": "[意志]/5", "母语": "&教育", "闪避": "[敏捷]/2"}
+AutoFillCOC7 = {
+    "生命": "[体质体型和]/10",
+    "理智": "&意志",
+    "魔法": "[意志]/5",
+    "母语": "&教育",
+    "闪避": "[敏捷]/2",
+}
 SkillDefaultVal = {
     "__DefaultDice": 100,
     "会计": 5,
