@@ -3,18 +3,47 @@ from .dices import help_message, st, en, rd0
 from .madness import ti, li
 from .investigator import Investigator
 from .san_check import sc
-from .cards import _cachepath, cards, cache_cards, set_handler, show_handler, sa_handler, del_handler
+from .cards import (
+    _cachepath,
+    cards,
+    cache_cards,
+    set_handler,
+    show_handler,
+    sa_handler,
+    del_handler,
+)
 
-from nonebot import get_driver, get_bot
+from nonebot import get_driver
 from nonebot.rule import Rule
 from nonebot.matcher import Matcher
-from nonebot.plugin import on_startswith
+from nonebot.plugin import on_startswith, PluginMetadata
 from nonebot.adapters import Bot as Bot
 from nonebot.adapters.onebot.v11 import Bot as V11Bot
 from nonebot.adapters.onebot.v12 import Bot as V12Bot
 
 
 import os
+
+__plugin_meta__ = PluginMetadata(
+    name="CoC骰娘",
+    description="CoC相关指令插件，包含属性骰、技能骰、理智检查、角色卡管理等功能。",
+    usage=""".help 查看帮助信息
+.st 属性骰
+.en 技能骰 [技能值]
+.ti 进行理智检查
+.li 进行理智恢复
+.coc [年龄] 生成调查员角色卡
+.sc [检定内容] 进行San值检查
+.rh [检定内容] 私聊进行属性/技能检定
+.r [检定内容] 进行属性/技能检定
+.set [属性/技能] [数值] 设置角色卡属性或技能值
+.show [属性/技能] 显示角色卡属性或技能值
+.sa [属性/技能] 显示所有符合条件的属性或技能值
+.del [属性/技能] 删除角色卡中的某项属性或技能值
+""",
+    author="AbrahumLink",
+    license="GPL-3.0",
+)
 
 driver = get_driver()
 
@@ -32,6 +61,7 @@ async def _():  # 角色卡暂存目录初始化
 def is_group_message() -> Rule:
     async def _is_group_message(bot: Bot, event: MessageEvent) -> bool:
         return True if type(event) is GroupMessageEvent else False
+
     return Rule(_is_group_message)
 
 
@@ -71,11 +101,16 @@ async def enhandler(matcher: Matcher, event: MessageEvent):
 async def rhcommandhandler(bot: Bot, event: GroupMessageEvent):
     args = str(event.get_message())[3:].strip()
     uid = event.get_user_id()
-    if args and not("." in args):
+    if args and "." not in args:
         print("get here")
         if isinstance(bot, V12Bot):
-            from nonebot.adapters.onebot.v12 import  MessageSegment
-            await bot.send_message(detail_type="private", user_id=uid, message=[MessageSegment.text(rd0(args))])
+            from nonebot.adapters.onebot.v12 import MessageSegment
+
+            await bot.send_message(
+                detail_type="private",
+                user_id=uid,
+                message=[MessageSegment.text(rd0(args))],
+            )
         elif isinstance(bot, V11Bot):
             await bot.send_private_msg(user_id=uid, message=rd0(args))
 
@@ -83,7 +118,7 @@ async def rhcommandhandler(bot: Bot, event: GroupMessageEvent):
 @rdcommand.handle()
 async def rdcommandhandler(event: MessageEvent):
     args = str(event.get_message())[2:].strip()
-    if args and not("." in args):
+    if args and "." not in args:
         await rdcommand.finish(rd0(args))
 
 
@@ -102,12 +137,16 @@ async def cochandler(matcher: Matcher, event: MessageEvent):
 
 
 @ticommand.handle()
-async def ticommandhandler(matcher: Matcher,):
+async def ticommandhandler(
+    matcher: Matcher,
+):
     await matcher.finish(ti())
 
 
 @licommand.handle()
-async def licommandhandler(matcher: Matcher,):
+async def licommandhandler(
+    matcher: Matcher,
+):
     await matcher.finish(li())
 
 

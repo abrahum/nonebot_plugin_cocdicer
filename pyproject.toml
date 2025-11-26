@@ -1,24 +1,26 @@
-[tool.poetry]
+[project]
 name = "nonebot_plugin_cocdicer"
 version = "0.4.0"
 description = "A COC dice plugin for Nonebot2"
-authors = ["abrahumlink <307887491@qq.com>"]
-documentation = "https://github.com/abrahum/nonebot_plugin_cocdicer#readme"
-homepage = "https://github.com/abrahum/nonebot_plugin_cocdicer"
 keywords = ["nonebot", "nonebot2", "coc", "dice"]
-license = "GPLv3"
+license = {text = "GPLv3"}
 readme = "README.md"
-repository = "https://github.com/abrahum/nonebot_plugin_cocdicer"
+dependencies = [
+    "nonebot2 >=2.0.0-beta.1",
+    "nonebot-adapter-onebot >=2.0.0-beta.1",
+    "diro-py >=0.1",
+]
+requires-python = ">=3.7.3"
 
-[tool.poetry.dependencies]
-python = "^3.7.3"
-nonebot2 = "^2.0.0-beta.1"
-nonebot-adapter-onebot = "^2.0.0-beta.1"
-diro-py = "^0.1"
-ujson = {version = ">=4.0.0", optional = true}
+[project.urls]
+Homepage = "https://github.com/abrahum/nonebot_plugin_cocdicer"
+Repository = "https://github.com/abrahum/nonebot_plugin_cocdicer"
+Documentation = "https://github.com/abrahum/nonebot_plugin_cocdicer#readme"
 
-[tool.poetry.dev-dependencies]
+[[project.authors]]
+name = "abrahumlink"
+email = "307887491@qq.com"
 
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+
+[project.optional-dependencies]
+ujson = ["ujson >=4.0.0"]
