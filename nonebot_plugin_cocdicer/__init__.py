@@ -4,7 +4,6 @@ from .madness import ti, li
 from .investigator import Investigator
 from .san_check import sc
 from .cards import (
-    _cachepath,
     cards,
     cache_cards,
     set_handler,
@@ -13,16 +12,13 @@ from .cards import (
     del_handler,
 )
 
-from nonebot import get_driver
+from nonebot import get_driver, require
 from nonebot.rule import Rule
 from nonebot.matcher import Matcher
 from nonebot.plugin import on_startswith, PluginMetadata
 from nonebot.adapters import Bot as Bot
 from nonebot.adapters.onebot.v11 import Bot as V11Bot
 from nonebot.adapters.onebot.v12 import Bot as V12Bot
-
-
-import os
 
 __plugin_meta__ = PluginMetadata(
     name="CoC骰娘",
@@ -43,18 +39,18 @@ __plugin_meta__ = PluginMetadata(
 """,
     author="AbrahumLink",
     license="GPL-3.0",
+    type="application",
+    homepage="https://github.com/abrahum/nonebot_plugin_cocdicer",
+    supported_adapters={"~onebot.v11", "~onebot.v12"},
 )
 
 driver = get_driver()
 
+require("nonebot_plugin_localstore")
+
 
 @driver.on_startup
-async def _():  # 角色卡暂存目录初始化
-    if not os.path.exists("data"):
-        os.makedirs("data")
-    if not os.path.exists(_cachepath):
-        with open(_cachepath, "w", encoding="utf-8") as f:
-            f.write("{}")
+async def _():
     cards.load()
 
 

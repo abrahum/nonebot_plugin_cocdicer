@@ -872,13 +872,16 @@ wheels = [
 
 [[package]]
 name = "nonebot-plugin-cocdicer"
-version = "0.4.0"
+version = "0.5.1"
 source = { virtual = "." }
 dependencies = [
     { name = "diro-py" },
     { name = "nonebot-adapter-onebot", version = "2.1.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.8'" },
     { name = "nonebot-adapter-onebot", version = "2.4.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.8.*'" },
     { name = "nonebot-adapter-onebot", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
+    { name = "nonebot-plugin-localstore", version = "0.1.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.8'" },
+    { name = "nonebot-plugin-localstore", version = "0.6.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.8.*'" },
+    { name = "nonebot-plugin-localstore", version = "0.7.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
     { name = "nonebot2", version = "2.0.0b5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.8'" },
     { name = "nonebot2", version = "2.2.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.8.*'" },
     { name = "nonebot2", version = "2.4.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
@@ -895,10 +898,61 @@ ujson = [
 requires-dist = [
     { name = "diro-py", specifier = ">=0.1" },
     { name = "nonebot-adapter-onebot", specifier = ">=2.0.0b1" },
+    { name = "nonebot-plugin-localstore", specifier = ">=0.1.0" },
     { name = "nonebot2", specifier = ">=2.0.0b1" },
     { name = "ujson", marker = "extra == 'ujson'", specifier = ">=4.0.0" },
 ]
 provides-extras = ["ujson"]
+
+[[package]]
+name = "nonebot-plugin-localstore"
+version = "0.1.0"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version < '3.8'",
+]
+dependencies = [
+    { name = "nonebot2", version = "2.0.0b5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.8'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/86/67/c262734d8a8f838bccb628b7ee9892139c00d1832f93606a7c9792690492/nonebot-plugin-localstore-0.1.0.tar.gz", hash = "sha256:6d264cf8adcc4a470b496a78384eafd6ffd13bb8b7e14125e38e641748d2ee79", size = 5741, upload-time = "2021-03-22T09:20:50.278Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e7/ef/cf1deeb53674b5bd52103ecdebdaca4773989b5c83f115396ad19b7d5e54/nonebot_plugin_localstore-0.1.0-py3-none-any.whl", hash = "sha256:a5be70a32f24d92561120881b883e4583c7aecec9703399cc6eef4618e5ee933", size = 6049, upload-time = "2021-03-22T09:20:52.105Z" },
+]
+
+[[package]]
+name = "nonebot-plugin-localstore"
+version = "0.6.0"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version == '3.8.*'",
+]
+dependencies = [
+    { name = "nonebot2", version = "2.2.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.8.*'" },
+    { name = "pydantic", version = "2.10.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.8.*'" },
+    { name = "typing-extensions", version = "4.13.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.8.*'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/33/dd/53f85ad48f9211f77a2472a80a92ae7207a5dc384576ce1d8d59cd223e86/nonebot_plugin_localstore-0.6.0.tar.gz", hash = "sha256:7eb4039cb2e76c54b860b2b98f2b90cd25284919603e81dedec367f215662fcd", size = 6274, upload-time = "2024-02-11T10:14:08.956Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/aa/b6/ee3a91b8bcc2ea59fac833604ba7195211e6e7db5ff9fe2b87d16d799470/nonebot_plugin_localstore-0.6.0-py3-none-any.whl", hash = "sha256:59f0126d85680601166a9a62cca886a33e1b0a8fef7cd67fff52747bd47f42d3", size = 8022, upload-time = "2024-02-11T10:14:07.41Z" },
+]
+
+[[package]]
+name = "nonebot-plugin-localstore"
+version = "0.7.4"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version >= '3.9'",
+]
+dependencies = [
+    { name = "nonebot2", version = "2.4.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
+    { name = "nonestorage", marker = "python_full_version >= '3.9'" },
+    { name = "pydantic", version = "2.12.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
+    { name = "typing-extensions", version = "4.15.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/63/22/67ec1e604c0385729bf2d71db406c032de9015363588785617113dfb76ac/nonebot_plugin_localstore-0.7.4.tar.gz", hash = "sha256:85ddc13814bfcd484ab311306823651390020bf44f4fb4733b343a58e72723ce", size = 5535, upload-time = "2025-03-01T12:54:04.077Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/7b/c8/0fcb2c6d994579e53342cbf11bf9326ddfab010d1a8063e1fc0cc19c13bf/nonebot_plugin_localstore-0.7.4-py3-none-any.whl", hash = "sha256:3b08030878eadcdd8b9ce3d079da0dc2d0e41dc91f0b2d8cf7fa862a27de9090", size = 6963, upload-time = "2025-03-01T12:54:02.137Z" },
+]
 
 [[package]]
 name = "nonebot2"
@@ -964,6 +1018,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/0a/85/d2201a11ec3c6e1ba4f663c61ff65a4da06becd3d66c3536c26694325361/nonebot2-2.4.4.tar.gz", hash = "sha256:b367c17f31ae0d548e374bb80b719ed12885620f29f3cbc305a5a88a6175f4e3", size = 90954, upload-time = "2025-10-29T04:02:55.577Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/66/ef/fa4a179d56f372619ce3899890277760b138ff6d5b395420e6d01e4523fd/nonebot2-2.4.4-py3-none-any.whl", hash = "sha256:8885d02906f1def83c138f298a7aa99ca1975351f44d8d290ea0eeec5aec1f0b", size = 118319, upload-time = "2025-10-29T04:02:54.55Z" },
+]
+
+[[package]]
+name = "nonestorage"
+version = "0.1.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/2b/58/04676895dc6aa4fa6b6bfb069692d1469bfeb175bf6c25ea071762d2b006/nonestorage-0.1.0.tar.gz", hash = "sha256:818232236455c79cabbb69e716f73aa1b9c21d579f1c1fcbdba273b60bac72d9", size = 19257, upload-time = "2024-12-21T08:35:18.1Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/30/54/7c796d764ef0c53d94862b1cfe55fcc383a0ba7c2764c0ce40307438a052/nonestorage-0.1.0-py3-none-any.whl", hash = "sha256:35811adf67c680c272bcb71fa9d6c3613cc2d1bb79f5bfc7d83c4412a79537cb", size = 4127, upload-time = "2024-12-21T08:35:15.732Z" },
 ]
 
 [[package]]

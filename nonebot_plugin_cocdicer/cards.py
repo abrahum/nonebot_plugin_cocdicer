@@ -5,15 +5,15 @@ from .messages import help_messages
 from .dices import expr
 
 import diro
+import nonebot_plugin_localstore as localstore
 
 try:
     import ujson as json
 except ModuleNotFoundError:
     import json
 
-import os
 import re
-_cachepath = os.path.join("data", "coc_cards.json")
+_cachepath = localstore.get_data_dir()
 
 
 def get_group_id(event: MessageEvent):
@@ -23,7 +23,7 @@ def get_group_id(event: MessageEvent):
         return "0"
 
 
-class Cards():
+class Cards:
     def __init__(self) -> None:
         self.data: Dict[str, dict] = {}
 
@@ -35,12 +35,15 @@ class Cards():
         with open(_cachepath, "r", encoding="utf-8") as f:
             self.data = json.load(f)
 
-    def update(self, event: MessageEvent, inv_dict: dict, qid: str = "", save: bool = True):
+    def update(
+        self, event: MessageEvent, inv_dict: dict, qid: str = "", save: bool = True
+    ):
         group_id = get_group_id(event)
         if not self.data.get(group_id):
             self.data[group_id] = {}
         self.data[group_id].update(
-            {qid if qid else str(event.sender.user_id): inv_dict})
+            {qid if qid else str(event.sender.user_id): inv_dict}
+        )
         if save:
             self.save()
 
@@ -48,21 +51,28 @@ class Cards():
         group_id = get_group_id(event)
         if self.data.get(group_id):
             if self.data[group_id].get(qid if qid else str(event.sender.user_id)):
-                return self.data[group_id].get(qid if qid else str(event.sender.user_id))
+                return self.data[group_id].get(
+                    qid if qid else str(event.sender.user_id)
+                )
         else:
             return None
 
     def delete(self, event: MessageEvent, qid: str = "", save: bool = True) -> bool:
         if self.get(event, qid=qid):
-            if self.data[get_group_id(event)].get(qid if qid else str(event.sender.user_id)):
+            if self.data[get_group_id(event)].get(
+                qid if qid else str(event.sender.user_id)
+            ):
                 self.data[get_group_id(event)].pop(
-                    qid if qid else str(event.sender.user_id))
+                    qid if qid else str(event.sender.user_id)
+                )
             if save:
                 self.save()
             return True
         return False
 
-    def delete_skill(self, event: MessageEvent, skill_name: str, qid: str = "", save: bool = True) -> bool:
+    def delete_skill(
+        self, event: MessageEvent, skill_name: str, qid: str = "", save: bool = True
+    ) -> bool:
         if self.get(event, qid=qid):
             data = self.get(event, qid=qid)
             if data["skills"].get(skill_name):
@@ -169,7 +179,7 @@ def del_handler(event: MessageEvent, args: str):
                 r.append("已删除使用中的人物卡！")
         else:
             if cards.delete_skill(event, arg):
-                r.append("已删除技能"+arg)
+                r.append("已删除技能" + arg)
     if not r:
         r.append(help_messages.del_)
     return r
