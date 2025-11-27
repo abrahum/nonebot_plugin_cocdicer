@@ -7,8 +7,8 @@ from .messages import help_messages
 
 class Mylist(list):
     def next(self, index: int):
-        if index < self.__len__()-1:
-            return self[index+1]
+        if index < self.__len__() - 1:
+            return self[index + 1]
         else:
             return ""
 
@@ -24,7 +24,7 @@ def dhr(t, o):
     if t == 0 and o == 0:
         return 100
     else:
-        return t*10+o
+        return t * 10 + o
 
 
 def st():
@@ -41,20 +41,20 @@ def st():
         rstr = "右臂"
     elif result < 20:
         rstr = "左臂"
-    elif result < 21:
+    else:
         rstr = "头部"
     return "D20=%d：命中了%s" % (result, rstr)
 
 
 def en(arg: str) -> str:
     try:
-        arg = int(arg)
+        argi = int(arg)
     except ValueError:
         return help_messages.en
     check = random.randint(1, 100)
-    if check > arg or check > 95:
+    if check > argi or check > 95:
         plus = random.randint(1, 10)
-        r = "判定值%d，判定成功，技能成长%d+%d=%d" % (check, arg, plus, arg+plus)
+        r = "判定值%d，判定成功，技能成长%d+%d=%d" % (check, arg, plus, argi + plus)
         return r + "\n温馨提示：如果技能提高到90%或更高，增加2D6理智点数。"
     else:
         return "判定值%d，判定失败，技能无成长。" % check
@@ -73,9 +73,9 @@ def expr(d: diro.Diro, anum: Optional[int]) -> str:
         elif result == 1:
             s += "大成功！"
         elif result <= anum // 5:
-            s += f"检定值{anum} {result}≤{anum//5} 极难成功"
+            s += f"检定值{anum} {result}≤{anum // 5} 极难成功"
         elif result <= anum // 2:
-            s += f"检定值{anum} {result}≤{anum//2} 困难成功"
+            s += f"检定值{anum} {result}≤{anum // 2} 困难成功"
         elif result <= anum:
             s += f"检定值{anum} {result}≤{anum} 成功"
         else:
@@ -92,7 +92,7 @@ def rd0(arg: str) -> str:
         if len(d_str) > 0:
             try:
                 time = int(d_str[0])
-            except:
+            except ValueError:
                 pass
         anum: Optional[int] = None
         if len(args) > 0:
@@ -101,7 +101,7 @@ def rd0(arg: str) -> str:
             except ValueError:
                 pass
         r = expr(d, anum)
-        for _ in range(time-1):
+        for _ in range(time - 1):
             r += "\n"
             r += expr(d, anum)
         return r

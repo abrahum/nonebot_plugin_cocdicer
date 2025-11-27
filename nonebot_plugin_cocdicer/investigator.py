@@ -1,29 +1,52 @@
 import random
+from pydantic import BaseModel, Field
 
 
-build_dict = {64: -2, 84: -1, 124: 0, 164: 1,
-              204: 2, 284: 3, 364: 4, 444: 5, 524: 6}
-db_dict = {-2: "-2", -1: "-1", 0: "0", 1: "1d4",
-           2: "1d6", 3: "2d6", 4: "3d6", 5: "4d6", 6: "5d6"}
+build_dict = {64: -2, 84: -1, 124: 0, 164: 1, 204: 2, 284: 3, 364: 4, 444: 5, 524: 6}
+db_dict = {
+    -2: "-2",
+    -1: "-1",
+    0: "0",
+    1: "1d4",
+    2: "1d6",
+    3: "2d6",
+    4: "3d6",
+    5: "4d6",
+    6: "5d6",
+}
 
 
 def randattr(time: int = 3, ex: int = 0):
     r = 0
     for _ in range(time):
         r += random.randint(1, 6)
-    return (r+ex)*5
+    return (r + ex) * 5
 
 
-class Investigator(object):
+class Investigator(BaseModel):
+    name: str
+    age: int
+    str_field: int = Field(alias="str")
+    con: int
+    siz: int
+    dex: int
+    app: int
+    int_field: int = Field(alias="int")
+    pow: int
+    edu: int
+    luc: int
+    san: int
+    skills: dict[str, int] = {}
+
     def __init__(self) -> None:
         self.name = "佚名调查员"
         self.age = 20
-        self.str = randattr()
+        self.str_field = randattr()
         self.con = randattr()
         self.siz = randattr(2, 6)
         self.dex = randattr()
         self.app = randattr()
-        self.int = randattr(2, 6)
+        self.int_field = randattr(2, 6)
         self.pow = randattr()
         self.edu = randattr(2, 6)
         self.luc = randattr()
@@ -31,17 +54,17 @@ class Investigator(object):
         self.skills = {}
 
     def body_build(self) -> int:
-        build = self.str + self.con
+        build = self.str_field + self.con
         for i, j in build_dict.items():
             if build <= i:
                 return j
-        return
+        return 0
 
     def db(self) -> str:
         return db_dict[self.body_build()]
 
     def lp_max(self) -> int:
-        return (self.con+self.siz)//10
+        return (self.con + self.siz) // 10
 
     def mov(self) -> int:
         r = 8
@@ -55,10 +78,10 @@ class Investigator(object):
             r -= 2
         elif self.age >= 40:
             r -= 1
-        if self.str < self.siz and self.dex < self.siz:
-            return r-1
-        elif self.str > self.siz and self.dex > self.siz:
-            return r+1
+        if self.str_field < self.siz and self.dex < self.siz:
+            return r - 1
+        elif self.str_field > self.siz and self.dex > self.siz:
+            return r + 1
         else:
             return r
 
@@ -71,9 +94,16 @@ class Investigator(object):
             return "教育成长检定D100=%d，小于%d，无增长。" % (edu_check, self.edu)
         if self.edu > 99:
             self.edu = 99
-            return "教育成长检定D100=%d，成长1D10=%d，成长到了最高值99！" % (edu_check, edu_en)
+            return "教育成长检定D100=%d，成长1D10=%d，成长到了最高值99！" % (
+                edu_check,
+                edu_en,
+            )
         else:
-            return "教育成长检定D100=%d，成长1D10=%d，成长到了%d" % (edu_check, edu_en, self.edu)
+            return "教育成长检定D100=%d，成长1D10=%d，成长到了%d" % (
+                edu_check,
+                edu_en,
+                self.edu,
+            )
 
     def edu_ups(self, times) -> str:
         r = ""
@@ -81,20 +111,20 @@ class Investigator(object):
             r += self.edu_up()
         return r
 
-    def sum_down(self, sum) -> str:
-        if self.str + self.con + self.dex-45 < sum:
-            self.str = 15
+    def sum_down(self, sum) -> None:
+        if self.str_field + self.con + self.dex - 45 < sum:
+            self.str_field = 15
             self.con = 15
             self.dex = 15
         else:
-            str_lost = random.randint(0, min(sum, self.str-15))
-            while sum - str_lost > self.con + self.dex-30:
-                str_lost = random.randint(0, min(sum, self.str-15))
-            self.str -= str_lost
+            str_lost = random.randint(0, min(sum, self.str_field - 15))
+            while sum - str_lost > self.con + self.dex - 30:
+                str_lost = random.randint(0, min(sum, self.str_field - 15))
+            self.str_field -= str_lost
             sum -= str_lost
-            con_lost = random.randint(0, min(sum, self.con-15))
-            while sum - con_lost > self.dex-15:
-                con_lost = random.randint(0, min(sum, self.con-15))
+            con_lost = random.randint(0, min(sum, self.con - 15))
+            while sum - con_lost > self.dex - 15:
+                con_lost = random.randint(0, min(sum, self.con - 15))
             self.con -= con_lost
             sum -= con_lost
             self.dex -= sum
@@ -102,14 +132,14 @@ class Investigator(object):
 
     def age_change(self, age: int = 20) -> str:
         if self.age != 20:
-            return  # 防止多次年龄增强判定
+            return ""  # 防止多次年龄增强判定
         if age < 15:
             return "年龄过小，无法担当调查员"
         elif age >= 90:
             return "该调查员已经作古。"
         self.age = age
         if 15 <= age < 20:
-            self.str -= 5
+            self.str_field -= 5
             self.siz -= 5
             self.edu -= 5
             luc = randattr()
@@ -138,15 +168,34 @@ class Investigator(object):
             self.sum_down(40)
             self.edu_ups(4)
             return "外貌-20，力量、体型、敏捷合计降低40，教育增强判定四次"
-        elif age < 90:
+        # elif age < 90:
+        else:
             self.app -= 25
             self.sum_down(80)
             self.edu_ups(4)
             return "外貌-25，力量、体型、敏捷合计降低80，教育增强判定四次"
 
     def __repr__(self) -> str:
-        return "%s 年龄:%d\n力量:%d 体质:%d 体型:%d\n敏捷:%d 外貌:%d 智力:%d\n意志:%d 教育:%d 幸运:%d\nDB:%s 生命值:%d 移动速度:%d SAN:%d" % (
-            self.name, self.age, self.str, self.con, self.siz, self.dex, self.app, self.int, self.pow, self.edu, self.luc, self.db(), self.lp_max(), self.mov(), self.san)
+        return (
+            "%s 年龄:%d\n力量:%d 体质:%d 体型:%d\n敏捷:%d 外貌:%d 智力:%d\n意志:%d 教育:%d 幸运:%d\nDB:%s 生命值:%d 移动速度:%d SAN:%d"
+            % (
+                self.name,
+                self.age,
+                self.str_field,
+                self.con,
+                self.siz,
+                self.dex,
+                self.app,
+                self.int_field,
+                self.pow,
+                self.edu,
+                self.luc,
+                self.db(),
+                self.lp_max(),
+                self.mov(),
+                self.san,
+            )
+        )
 
     def skills_output(self) -> str:
         if not self.skills:
@@ -158,7 +207,3 @@ class Investigator(object):
 
     def output(self) -> str:
         return self.__repr__()
-
-    def load(self, data: dict):
-        self.__dict__.update(data)
-        return self

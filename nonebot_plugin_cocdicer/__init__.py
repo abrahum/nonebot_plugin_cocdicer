@@ -37,11 +37,13 @@ __plugin_meta__ = PluginMetadata(
 .sa [属性/技能] 显示所有符合条件的属性或技能值
 .del [属性/技能] 删除角色卡中的某项属性或技能值
 """,
-    author="AbrahumLink",
-    license="GPL-3.0",
     type="application",
     homepage="https://github.com/abrahum/nonebot_plugin_cocdicer",
     supported_adapters={"~onebot.v11", "~onebot.v12"},
+    extra={
+        "author": "AbrahumLink",
+        "license": "GPL-3.0",
+    },
 )
 
 driver = get_driver()
@@ -94,21 +96,21 @@ async def enhandler(matcher: Matcher, event: MessageEvent):
 
 
 @rhcommand.handle()
-async def rhcommandhandler(bot: Bot, event: GroupMessageEvent):
+async def rhcommandhandler(bot: V11Bot | V12Bot, event: GroupMessageEvent):
     args = str(event.get_message())[3:].strip()
     uid = event.get_user_id()
     if args and "." not in args:
         print("get here")
         if isinstance(bot, V12Bot):
-            from nonebot.adapters.onebot.v12 import MessageSegment
+            from nonebot.adapters.onebot.v12 import MessageSegment, Message
 
             await bot.send_message(
                 detail_type="private",
                 user_id=uid,
-                message=[MessageSegment.text(rd0(args))],
+                message=Message([MessageSegment.text(rd0(args))]),
             )
         elif isinstance(bot, V11Bot):
-            await bot.send_private_msg(user_id=uid, message=rd0(args))
+            await bot.send_private_msg(user_id=int(uid), message=rd0(args))
 
 
 @rdcommand.handle()
@@ -128,7 +130,7 @@ async def cochandler(matcher: Matcher, event: MessageEvent):
     inv = Investigator()
     await matcher.send(inv.age_change(args))
     if 15 <= args < 90:
-        cache_cards.update(event, inv.__dict__, save=False)
+        cache_cards.update(event, inv, save=False)
         await matcher.finish(inv.output())
 
 

@@ -3,18 +3,13 @@ from .investigator import Investigator
 from .util import MessageEvent, GroupMessageEvent
 from .messages import help_messages
 from .dices import expr
+from pydantic import BaseModel
 
+import re
 import diro
 import nonebot_plugin_localstore as localstore
 
-try:
-    import ujson as json
-except ModuleNotFoundError:
-    import json
-
-import re
-
-DATA_DIR = localstore.get_plugin_data_dir()
+DATA_DIR = localstore.get_plugin_data_dir() / "cards.json"
 
 
 def get_group_id(event: MessageEvent):
@@ -24,31 +19,32 @@ def get_group_id(event: MessageEvent):
         return "0"
 
 
-class Cards:
+class Cards(BaseModel):
+    data: Dict[str, Dict[str, Investigator]]  # group_id: {user_id: investigator}
+
     def __init__(self) -> None:
-        self.data: Dict[str, dict] = {}
+        self.data = {}
 
     def save(self) -> None:
         with open(DATA_DIR, "w", encoding="utf-8") as f:
-            json.dump(self.data, f, ensure_ascii=False)
+            f.write(self.model_dump_json(ensure_ascii=False, by_alias=True))
 
     def load(self) -> None:
         with open(DATA_DIR, "r", encoding="utf-8") as f:
-            self.data = json.load(f)
+            readed = Cards.model_validate_json(f.read())
+            self.data = readed.data
 
     def update(
-        self, event: MessageEvent, inv_dict: dict, qid: str = "", save: bool = True
+        self, event: MessageEvent, inv: Investigator, qid: str = "", save: bool = True
     ):
         group_id = get_group_id(event)
         if not self.data.get(group_id):
             self.data[group_id] = {}
-        self.data[group_id].update(
-            {qid if qid else str(event.sender.user_id): inv_dict}
-        )
+        self.data[group_id].update({qid if qid else str(event.sender.user_id): inv})
         if save:
             self.save()
 
-    def get(self, event: MessageEvent, qid: str = "") -> Optional[Dict[str, dict]]:
+    def get(self, event: MessageEvent, qid: str = "") -> Optional[Investigator]:
         group_id = get_group_id(event)
         if self.data.get(group_id):
             if self.data[group_id].get(qid if qid else str(event.sender.user_id)):
@@ -75,10 +71,10 @@ class Cards:
         self, event: MessageEvent, skill_name: str, qid: str = "", save: bool = True
     ) -> bool:
         if self.get(event, qid=qid):
-            data = self.get(event, qid=qid)
-            if data["skills"].get(skill_name):
-                data["skills"].pop(skill_name)
-                self.update(event, data, qid=qid, save=save)
+            inv = self.get(event, qid=qid)
+            if inv and inv.skills.get(skill_name):
+                inv.skills.pop(skill_name)
+                self.update(event, inv, qid=qid, save=save)
                 return True
         return False
 
@@ -88,12 +84,12 @@ cache_cards = Cards()
 attrs_dict: Dict[str, List[str]] = {
     "名字": ["name", "名字", "名称"],
     "年龄": ["age", "年龄"],
-    "力量": ["str", "力量"],
+    "力量": ["str_field", "str", "力量"],
     "体质": ["con", "体质"],
     "体型": ["siz", "体型"],
     "敏捷": ["dex", "敏捷"],
     "外貌": ["app", "外貌"],
-    "智力": ["int", "智力", "灵感"],
+    "智力": ["int_field", "int", "智力", "灵感"],
     "意志": ["pow", "意志"],
     "教育": ["edu", "教育"],
     "幸运": ["luc", "幸运"],
@@ -101,25 +97,24 @@ attrs_dict: Dict[str, List[str]] = {
 }
 
 
-def set_handler(event: MessageEvent, args: str):
-    if not args:
+def set_handler(event: MessageEvent, arg: str):
+    if not arg:
         if cache_cards.get(event):
-            card_data = cache_cards.get(event)
-            cards.update(event, inv_dict=card_data)
-            inv = Investigator().load(card_data)
-            return "成功从缓存保存人物卡属性：\n" + inv.output()
+            inv = cache_cards.get(event)
+            if inv:
+                cards.update(event, inv=inv)
+                return "成功从缓存保存人物卡属性：\n" + inv.output()
         else:
             return "未找到缓存数据，请先使用coc指令生成角色"
     else:
-        args = args.split(" ")
+        args = arg.split(" ")
         if cards.get(event):
-            card_data = cards.get(event)
-            inv = Investigator().load(card_data)
+            inv = cards.get(event)
         else:
             return "未找到已保存数据，请先使用空白set指令保存角色数据"
         if len(args) >= 2:
             for attr, alias in attrs_dict.items():
-                if args[0] in alias:
+                if args[0] in alias and inv:
                     if attr == "名字":
                         inv.__dict__[alias[0]] = args[1]
                     else:
@@ -127,12 +122,13 @@ def set_handler(event: MessageEvent, args: str):
                             inv.__dict__[alias[0]] = int(args[1])
                         except ValueError:
                             return "请输入正整数属性数据"
-                    cards.update(event, inv.__dict__)
+                    # cards.update(event, inv=inv)
                     return "设置调查员%s为：%s" % (attr, args[1])
             try:
-                inv.skills[args[0]] = int(args[1])
-                cards.update(event, inv.__dict__)
-                return "设置调查员%s技能为：%s" % (args[0], args[1])
+                if inv:
+                    inv.skills[args[0]] = int(args[1])
+                    # cards.update(event, inv)
+                    return "设置调查员%s技能为：%s" % (args[0], args[1])
             except ValueError:
                 return "请输入正整数技能数据"
 
@@ -141,34 +137,36 @@ def show_handler(event: MessageEvent, args: str):
     r = []
     if not args:
         if cards.get(event):
-            card_data = cards.get(event)
-            inv = Investigator().load(card_data)
-            r.append("使用中人物卡：\n" + inv.output())
+            inv = cards.get(event)
+            if inv:
+                r.append("使用中人物卡：\n" + inv.output())
         if cache_cards.get(event):
-            card_data = cache_cards.get(event)
-            inv = Investigator().load(card_data)
-            r.append("已暂存人物卡：\n" + inv.output())
+            inv = cache_cards.get(event)
+            if inv:
+                r.append("已暂存人物卡：\n" + inv.output())
     elif args == "s":
         if cards.get(event):
-            card_data = cards.get(event)
-            inv = Investigator().load(card_data)
-            r.append(inv.skills_output())
-    elif re.search(r"\[cq:at,qq=\d+\]", args):
-        qid = re.search(r"\[cq:at,qq=\d+\]", args).group()[10:-1]
-        if cards.get(event, qid=qid):
-            card_data = cards.get(event, qid=qid)
-            inv = Investigator().load(card_data)
-            r.append("查询到人物卡：\n" + inv.output())
-            if args[0] == "s":
+            inv = cards.get(event)
+            if inv:
                 r.append(inv.skills_output())
+    elif re.search(r"\[cq:at,qq=\d+\]", args):
+        search_result = re.search(r"\[cq:at,qq=\d+\]", args)
+        if search_result:
+            qid = search_result.group()[10:-1]
+            if cards.get(event, qid=qid):
+                inv = cards.get(event, qid=qid)
+                if inv:
+                    r.append("查询到人物卡：\n" + inv.output())
+                    if args[0] == "s":
+                        r.append(inv.skills_output())
     if not r:
         r.append("无保存/暂存信息")
     return r
 
 
-def del_handler(event: MessageEvent, args: str):
+def del_handler(event: MessageEvent, arg: str):
     r = []
-    args = args.split(" ")
+    args = arg.split(" ")
     for arg in args:
         if not arg:
             pass
@@ -181,20 +179,22 @@ def del_handler(event: MessageEvent, args: str):
         else:
             if cards.delete_skill(event, arg):
                 r.append("已删除技能" + arg)
+            else:
+                r.append("未找到人物卡或技能" + arg)
     if not r:
         r.append(help_messages.del_)
     return r
 
 
-def sa_handler(event: MessageEvent, args: str):
-    if not args:
+def sa_handler(event: MessageEvent, arg: str) -> str:
+    if not arg:
         return help_messages.sa
     elif not cards.get(event):
         return "请先使用set指令保存人物卡后再使用快速检定功能。"
-    for attr, alias in attrs_dict.items():
-        if args in alias:
+    for _, alias in attrs_dict.items():
+        if arg in alias:
             arg = alias[0]
-            break
-    card_data = cards.get(event)
-    dices = diro.parse("")
-    return expr(dices, card_data[arg])
+            card_data = cards.get(event)
+            dices = diro.parse("")
+            return expr(dices, card_data.__dict__[arg])
+    return "未找到属性%s，请检查输入是否正确。" % arg
