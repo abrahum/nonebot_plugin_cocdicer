@@ -13,7 +13,8 @@ except ModuleNotFoundError:
     import json
 
 import re
-_cachepath = localstore.get_data_dir()
+
+DATA_DIR = localstore.get_plugin_data_dir()
 
 
 def get_group_id(event: MessageEvent):
@@ -28,11 +29,11 @@ class Cards:
         self.data: Dict[str, dict] = {}
 
     def save(self) -> None:
-        with open(_cachepath, "w", encoding="utf-8") as f:
+        with open(DATA_DIR, "w", encoding="utf-8") as f:
             json.dump(self.data, f, ensure_ascii=False)
 
     def load(self) -> None:
-        with open(_cachepath, "r", encoding="utf-8") as f:
+        with open(DATA_DIR, "r", encoding="utf-8") as f:
             self.data = json.load(f)
 
     def update(

@@ -872,7 +872,7 @@ wheels = [
 
 [[package]]
 name = "nonebot-plugin-cocdicer"
-version = "0.5.1"
+version = "0.5.2"
 source = { virtual = "." }
 dependencies = [
     { name = "diro-py" },

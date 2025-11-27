@@ -1,6 +1,6 @@
 [project]
 name = "nonebot_plugin_cocdicer"
-version = "0.5.1"
+version = "0.5.2"
 description = "A COC dice plugin for Nonebot2"
 keywords = ["nonebot", "nonebot2", "coc", "dice"]
 license = {text = "GPLv3"}
