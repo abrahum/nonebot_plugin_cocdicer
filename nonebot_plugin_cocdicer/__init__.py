@@ -4,6 +4,7 @@ from .madness import ti, li
 from .investigator import Investigator
 from .san_check import sc
 from .cards import (
+    DATA_FILE,
     cards,
     cache_cards,
     set_handler,
@@ -53,6 +54,11 @@ require("nonebot_plugin_localstore")
 
 @driver.on_startup
 async def _():
+    import os
+
+    if not os.path.exists(DATA_FILE):
+        with open(DATA_FILE, "w", encoding="utf-8") as f:
+            f.write("{}")
     cards.load()
 
 

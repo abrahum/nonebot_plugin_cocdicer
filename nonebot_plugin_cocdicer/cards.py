@@ -9,7 +9,7 @@ import re
 import diro
 import nonebot_plugin_localstore as localstore
 
-DATA_DIR = localstore.get_plugin_data_dir() / "cards.json"
+DATA_FILE = localstore.get_plugin_data_dir() / "cards.json"
 
 
 def get_group_id(event: MessageEvent):
@@ -26,11 +26,11 @@ class Cards(BaseModel):
         self.data = {}
 
     def save(self) -> None:
-        with open(DATA_DIR, "w", encoding="utf-8") as f:
+        with open(DATA_FILE, "w", encoding="utf-8") as f:
             f.write(self.model_dump_json(ensure_ascii=False, by_alias=True))
 
     def load(self) -> None:
-        with open(DATA_DIR, "r", encoding="utf-8") as f:
+        with open(DATA_FILE, "r", encoding="utf-8") as f:
             readed = Cards.model_validate_json(f.read())
             self.data = readed.data
 
