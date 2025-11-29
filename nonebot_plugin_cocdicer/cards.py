@@ -4,10 +4,13 @@ from .util import MessageEvent, GroupMessageEvent
 from .messages import help_messages
 from .dices import expr
 from pydantic import BaseModel
+from nonebot import require
 
 import re
 import diro
-import nonebot_plugin_localstore as localstore
+
+require("nonebot_plugin_localstore")
+import nonebot_plugin_localstore as localstore  # noqa: E402
 
 # localstore.get_plugin_data_dir() / "cards.json" = localstore.get_plugin_data_dir() / "cards.json"
 
@@ -26,11 +29,15 @@ class Cards(BaseModel):
         super().__init__(**data)
 
     def save(self) -> None:
-        with open(localstore.get_plugin_data_dir() / "cards.json", "w", encoding="utf-8") as f:
+        with open(
+            localstore.get_plugin_data_dir() / "cards.json", "w", encoding="utf-8"
+        ) as f:
             f.write(self.model_dump_json(ensure_ascii=False, by_alias=True))
 
     def load(self) -> None:
-        with open(localstore.get_plugin_data_dir() / "cards.json", "r", encoding="utf-8") as f:
+        with open(
+            localstore.get_plugin_data_dir() / "cards.json", "r", encoding="utf-8"
+        ) as f:
             readed = Cards.model_validate_json(f.read())
             self.data = readed.data
 
@@ -44,7 +51,9 @@ class Cards(BaseModel):
         if save:
             self.save()
 
-    def get_by_event(self, event: MessageEvent, qid: str = "") -> Optional[Investigator]:
+    def get_by_event(
+        self, event: MessageEvent, qid: str = ""
+    ) -> Optional[Investigator]:
         group_id = get_group_id(event)
         if self.data.get(group_id):
             if self.data[group_id].get(qid if qid else str(event.sender.user_id)):

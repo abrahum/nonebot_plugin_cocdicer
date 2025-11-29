@@ -4,7 +4,6 @@ from .madness import ti, li
 from .investigator import Investigator
 from .san_check import sc
 from .cards import (
-    cards,
     cache_cards,
     set_handler,
     show_handler,
@@ -19,7 +18,8 @@ from nonebot.plugin import on_startswith, PluginMetadata
 from nonebot.adapters import Bot as Bot
 from nonebot.adapters.onebot.v11 import Bot as V11Bot
 from nonebot.adapters.onebot.v12 import Bot as V12Bot
-import nonebot_plugin_localstore as localstore
+
+require("nonebot_plugin_localstore")
 
 __plugin_meta__ = PluginMetadata(
     name="CoC骰娘",
@@ -48,20 +48,6 @@ __plugin_meta__ = PluginMetadata(
 )
 
 driver = get_driver()
-
-require("nonebot_plugin_localstore")
-
-
-@driver.on_startup
-async def _():
-    import os
-
-    if not os.path.exists(localstore.get_plugin_data_dir() / "cards.json"):
-        with open(
-            localstore.get_plugin_data_dir() / "cards.json", "w", encoding="utf-8"
-        ) as f:
-            f.write("{}")
-    cards.load()
 
 
 def is_group_message() -> Rule:
