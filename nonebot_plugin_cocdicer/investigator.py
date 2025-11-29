@@ -38,7 +38,7 @@ class Investigator(BaseModel):
     san: int
     skills: dict[str, int] = {}
 
-    def __init__(self) -> None:
+    def __init__(self, **data) -> None:
         self.name = "佚名调查员"
         self.age = 20
         self.str_field = randattr()
@@ -52,6 +52,7 @@ class Investigator(BaseModel):
         self.luc = randattr()
         self.san = self.pow
         self.skills = {}
+        super().__init__(**data)
 
     def body_build(self) -> int:
         build = self.str_field + self.con

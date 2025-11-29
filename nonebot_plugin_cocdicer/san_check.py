@@ -1,6 +1,7 @@
 from .messages import help_messages
 from .cards import cards
 from .util import MessageEvent
+from .investigator import Investigator
 
 import diro
 
@@ -17,24 +18,29 @@ def sc(arg: str, event: MessageEvent) -> str:
         failure.roll()
         failure = failure.calc()
         if len(args) > 1:
-            card = {"san": int(args[1]), "name": "该调查员"}
+            card: Investigator | None = Investigator.model_validate(
+                {"san": int(args[1]), "name": "该调查员"}
+            )
             using_card = False
         else:
-            card = cards.get(event)
+            card = cards.get_by_event(event)
             using_card = True
         r = diro.Dice().roll()()
         s = f"San Check:{r}"
-        down = success if r <= card["san"] else failure
-        s += f"理智降低了{down}点"
-        if down >= card["san"]:
-            s += "\n%s陷入了永久性疯狂" % card["name"]
-        elif down >= (card["san"] // 5):
-            s += "\n%s陷入了不定性疯狂" % card["name"]
-        elif down >= 5:
-            s += "\n%s陷入了临时性疯狂" % card["name"]
-        if using_card:
-            card["san"] -= down
-            cards.update(event, card)
-        return s
-    except:
+        if not card:
+            return "未找到使用中的人物卡，请使用set指令保存人物卡后再进行理智检查。"
+        else:
+            down = success if r <= card.san else failure
+            s += f"理智降低了{down}点"
+            if down >= card.san:
+                s += "\n%s陷入了永久性疯狂" % card.name
+            elif down >= (card.san // 5):
+                s += "\n%s陷入了不定性疯狂" % card.name
+            elif down >= 5:
+                s += "\n%s陷入了临时性疯狂" % card.name
+            if using_card:
+                card.san -= down
+                cards.update(event, card)
+            return s
+    except Exception:
         return help_messages.sc

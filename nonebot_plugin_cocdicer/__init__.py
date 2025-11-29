@@ -4,7 +4,6 @@ from .madness import ti, li
 from .investigator import Investigator
 from .san_check import sc
 from .cards import (
-    DATA_FILE,
     cards,
     cache_cards,
     set_handler,
@@ -20,6 +19,7 @@ from nonebot.plugin import on_startswith, PluginMetadata
 from nonebot.adapters import Bot as Bot
 from nonebot.adapters.onebot.v11 import Bot as V11Bot
 from nonebot.adapters.onebot.v12 import Bot as V12Bot
+import nonebot_plugin_localstore as localstore
 
 __plugin_meta__ = PluginMetadata(
     name="CoC骰娘",
@@ -56,8 +56,10 @@ require("nonebot_plugin_localstore")
 async def _():
     import os
 
-    if not os.path.exists(DATA_FILE):
-        with open(DATA_FILE, "w", encoding="utf-8") as f:
+    if not os.path.exists(localstore.get_plugin_data_dir() / "cards.json"):
+        with open(
+            localstore.get_plugin_data_dir() / "cards.json", "w", encoding="utf-8"
+        ) as f:
             f.write("{}")
     cards.load()
 
